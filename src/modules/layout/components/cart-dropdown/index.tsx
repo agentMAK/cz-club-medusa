@@ -16,6 +16,9 @@ import LocalizedClientLink from "@modules/common/components/localized-client-lin
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
+import { Bebas_Neue } from "next/font/google"
+
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 const CartDropdown = ({
   cart: cartState,
@@ -82,7 +85,7 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className="hover:text-ui-fg-base"
+            className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
