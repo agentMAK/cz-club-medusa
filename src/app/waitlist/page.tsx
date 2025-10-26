@@ -1,4 +1,7 @@
 import Image from "next/image"
+import { Bebas_Neue } from "next/font/google"
+
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 export default function WaitlistPage() {
   return (
@@ -9,11 +12,11 @@ export default function WaitlistPage() {
         height={70}
         width={119}
       />
-      <div className="flex flex-col items-center justify-center gap-2">
-        <p className="font-blackhan text-4xl font-bold">MEMBERS ONLY</p>
+      <div className={`${bebas.className} flex flex-col items-center justify-center gap-1`}>
+        <p className="text-5xl font-bold">MEMBERS ONLY</p>
         <button
           type="button"
-          className="px-6 py-3 rounded-md text-white text-sm font-blackhan"
+          className="px-6 py-3 rounded-md text-white text-lg"
         >
           JOIN WAITLIST
         </button>
