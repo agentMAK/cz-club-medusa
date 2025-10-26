@@ -69,6 +69,7 @@ module.exports = {
           "Ubuntu",
           "sans-serif",
         ],
+        blackhan: ['"Black Han Sans"', "sans-serif"],
       },
       keyframes: {
         ring: {

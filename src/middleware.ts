@@ -104,6 +104,24 @@ async function getCountryCode(
  * Middleware to handle region selection and onboarding status.
  */
 export async function middleware(request: NextRequest) {
+  const { pathname } = request.nextUrl
+
+  const allow =
+    pathname === "/waitlist" ||
+    pathname.startsWith("/_next") ||
+    pathname === "/favicon.ico" ||
+    pathname.startsWith("/images") ||
+    pathname.startsWith("/assets")
+
+  if (allow) {
+    return NextResponse.next()
+  }
+
+  const ENABLE_WAITLIST = process.env.NEXT_PUBLIC_ENABLE_WAITLIST === "true"
+  if (ENABLE_WAITLIST) {
+    return NextResponse.redirect(new URL("/waitlist", request.url), 307)
+  }
+
   let redirectUrl = request.nextUrl.href
 
   let response = NextResponse.redirect(redirectUrl, 307)
