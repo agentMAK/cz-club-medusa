@@ -128,15 +128,6 @@ export default function WaitlistPage() {
               </div>
             ) : (
               <>
-                {/* Debug toggle - remove in production */}
-                <button
-                  type="button"
-                  onClick={() => setDebugMode(!debugMode)}
-                  className="text-xs text-gray-500 mb-2"
-                >
-                  {debugMode ? "Hide" : "Show"} Debug
-                </button>
-
                 {/* Hidden iframe to handle form submission */}
                 <iframe
                   name="mailchimp-iframe"
