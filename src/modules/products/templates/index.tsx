@@ -28,7 +28,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
   return (
     <>
       <div
-        className="content-container grid grid-cols-1 small:grid-cols-2 gap-x-12 py-6"
+        className="content-container grid grid-cols-1 small:grid-cols-2 gap-x-12 pb-6"
         data-testid="product-container"
       >
         <div className="w-full">

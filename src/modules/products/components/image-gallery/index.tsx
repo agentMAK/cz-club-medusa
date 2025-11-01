@@ -20,7 +20,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
 
   return (
     <div className="w-full flex flex-col gap-y-4">
-      <div className="relative aspect-[29/34] w-full overflow-hidden bg-transparent">
+      <div className="relative aspect-[7/8] w-full overflow-hidden bg-transparent">
         <Image
           src={selected.url as string}
           priority
