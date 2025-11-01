@@ -70,6 +70,7 @@ module.exports = {
           "sans-serif",
         ],
         blackhan: ['"Black Han Sans"', "sans-serif"],
+        bebas: ['"Bebas Neue"', "sans-serif"],
       },
       keyframes: {
         ring: {

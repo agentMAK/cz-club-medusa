@@ -33,6 +33,7 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
@@ -60,6 +61,8 @@ export default function ProductActions({
       ...prev,
       [optionId]: value,
     }))
+    // Clear error when user selects an option
+    setErrorMessage(null)
   }
 
   //check if the selected options produce a valid variant
@@ -100,8 +103,19 @@ export default function ProductActions({
 
   // add the selected variant to the cart
   const handleAddToCart = async () => {
-    if (!selectedVariant?.id) return null
+    // Require variant selection
+    if (!selectedVariant) {
+      setErrorMessage("Please select a variant before adding to cart")
+      return
+    }
 
+    // Prevent adding when not in stock or invalid
+    if (!inStock || !isValidVariant) {
+      setErrorMessage("This variant is currently out of stock")
+      return
+    }
+
+    setErrorMessage(null)
     setIsAdding(true)
 
     await addToCart({
@@ -142,24 +156,19 @@ export default function ProductActions({
 
         <Button
           onClick={handleAddToCart}
-          disabled={
-            !inStock ||
-            !selectedVariant ||
-            !!disabled ||
-            isAdding ||
-            !isValidVariant
-          }
+          disabled={!!disabled || isAdding || (selectedVariant ? !inStock || !isValidVariant : false)}
           variant="primary"
           className="w-full h-10"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
-            ? "Select variant"
-            : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+          {"Add to cart"}
         </Button>
+        {errorMessage && (
+          <p className="text-sm text-red-600 mt-2" role="alert">
+            {errorMessage}
+          </p>
+        )}
         <MobileActions
           product={product}
           variant={selectedVariant}
