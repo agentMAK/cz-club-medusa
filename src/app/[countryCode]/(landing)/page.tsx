@@ -22,7 +22,7 @@ export default function Home() {
         <LocalizedClientLink href="/store">
           <button
             type="button"
-            className="px-6 py-3 rounded-md text-lg hover:text-gray-200 transition-colors"
+            className="px-6 py-3 rounded-md text-lg hover:text-gray-500 transition-colors"
           >
             ENTER
           </button>
