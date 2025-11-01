@@ -1,33 +1,31 @@
 import { Metadata } from "next"
 
-import { SortOptions } from "@modules/store/components/refinement-list/sort-products"
-import StoreTemplate from "@modules/store/templates"
+import AllProductsGrid from "@modules/home/components/all-products-grid"
+import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
   title: "Store",
   description: "Explore all of our products.",
 }
 
-type Params = {
-  searchParams: Promise<{
-    sortBy?: SortOptions
-    page?: string
-  }>
-  params: Promise<{
-    countryCode: string
-  }>
-}
+export default async function StorePage(props: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const params = await props.params
 
-export default async function StorePage(props: Params) {
-  const params = await props.params;
-  const searchParams = await props.searchParams;
-  const { sortBy, page } = searchParams
+  const { countryCode } = params
+
+  const region = await getRegion(countryCode)
+
+  if (!region) {
+    return null
+  }
 
   return (
-    <StoreTemplate
-      sortBy={sortBy}
-      page={page}
-      countryCode={params.countryCode}
-    />
+    <>
+      <div>
+        <AllProductsGrid region={region} />
+      </div>
+    </>
   )
 }

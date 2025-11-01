@@ -16,7 +16,7 @@ export default async function Nav() {
   return (
     <div className="inset-x-0 z-50 group">
       <header className="relative h-20 mx-auto duration-200" style={{ backgroundColor: '#F1EEEB' }}>
-        <nav className="txt-xsmall-plus px-10 text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
+        <nav className="txt-xsmall-plus px-5 md:px-10 text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
             <div className="h-full">
               <SideMenu regions={regions} />

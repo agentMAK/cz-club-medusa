@@ -20,13 +20,13 @@ const ProductInfo = ({ product }: ProductInfoProps) => {
         )}
         <Heading
           level="h2"
-          className="text-3xl leading-10 text-ui-fg-base"
+          className="text-5xl leading-10 text-ui-fg-base font-bebas uppercase"
           data-testid="product-title"
         >
           {product.title}
         </Heading>
 
-        <div className="text-sm text-ui-fg-subtle space-y-2">
+        <div className="text-sm text-ui-fg-subtle space-y-2 font-bebas uppercase">
           {product.description
             ?.split('-')
             .map((item) => item.trim())
