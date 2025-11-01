@@ -1,9 +1,12 @@
 "use client"
 
 import { useEffect } from "react"
-import type { ReactNode } from "react"
 
-export default function LandingLayout(props: { children: ReactNode }) {
+export default function WaitlistLayout({
+  children,
+}: {
+  children: React.ReactNode
+}) {
   useEffect(() => {
     // Set body background to black
     document.body.style.backgroundColor = "black"
@@ -16,7 +19,6 @@ export default function LandingLayout(props: { children: ReactNode }) {
     }
   }, [])
 
-  return props.children
+  return <>{children}</>
 }
-
 
