@@ -1,7 +1,7 @@
 "use client"
 import Image from "next/image"
 import { Bebas_Neue } from "next/font/google"
-import { useState, FormEvent } from "react"
+import { useState, FormEvent, useEffect } from "react"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
@@ -14,6 +14,20 @@ export default function WaitlistPage() {
     text: string
   } | null>(null)
   const [debugMode, setDebugMode] = useState(false) // Toggle this to see iframe response
+
+  // Set body background to black when component mounts
+  useEffect(() => {
+    // Store original background color
+    const originalBgColor = document.body.style.backgroundColor
+    
+    // Set body background to black
+    document.body.style.backgroundColor = '#000000'
+    
+    // Cleanup: restore original background when component unmounts
+    return () => {
+      document.body.style.backgroundColor = originalBgColor
+    }
+  }, [])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault() // Prevent default form submission
