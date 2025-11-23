@@ -1,24 +1,16 @@
-"use client"
+import { Metadata } from "next"
+import WaitlistLayoutClient from "./layout-client"
 
-import { useEffect } from "react"
+export const metadata: Metadata = {
+  title: "CZ Club",
+  description: "Join the CZ Club waitlist",
+}
 
 export default function WaitlistLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  useEffect(() => {
-    // Set body background to black
-    document.body.style.backgroundColor = "black"
-    document.documentElement.style.backgroundColor = "black"
-
-    // Cleanup: restore original background when leaving this route
-    return () => {
-      document.body.style.backgroundColor = "#F1EEEB"
-      document.documentElement.style.backgroundColor = ""
-    }
-  }, [])
-
-  return <>{children}</>
+  return <WaitlistLayoutClient>{children}</WaitlistLayoutClient>
 }
 

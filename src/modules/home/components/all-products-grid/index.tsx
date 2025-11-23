@@ -34,7 +34,7 @@ export default async function AllProductsGrid({
 
   return (
     <div className="content-container">
-      <ul className="mx-auto max-w-[1000px] grid grid-cols-1 md:grid-cols-2 gap-[80px]">
+      <ul className="mx-auto max-w-[1000px] grid grid-cols-1 md:grid-cols-2 gap-[40px] md:gap-[80px]">
         {products.map((product) => (
           <li key={product.id}>
             <ProductPreview product={product} region={region} />

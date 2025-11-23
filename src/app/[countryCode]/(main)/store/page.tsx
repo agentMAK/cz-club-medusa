@@ -4,7 +4,7 @@ import AllProductsGrid from "@modules/home/components/all-products-grid"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {
-  title: "Store",
+  title: "CZ CLUB",
   description: "Explore all of our products.",
 }
 
