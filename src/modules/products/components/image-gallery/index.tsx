@@ -33,7 +33,7 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
       </div>
 
       {validImages.length > 1 && (
-        <ul className="flex items-center gap-3">
+        <ul className="flex items-center justify-center gap-3">
           {validImages.map((img, idx) => (
             <li key={img.id || idx}>
               <button
