@@ -1,47 +1,48 @@
-import Back from "@modules/common/icons/back"
-import FastDelivery from "@modules/common/icons/fast-delivery"
-import Refresh from "@modules/common/icons/refresh"
+import { Bebas_Neue } from "next/font/google"
+import { Package, Clock } from "lucide-react"
 import Accordion from "@modules/products/components/product-tabs/accordion"
+import LocalizedClientLink from "@modules/common/components/localized-client-link"
+
+const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 export default function DeliveryInfo() {
   return (
     <Accordion type="single" collapsible>
-      <Accordion.Item title="Delivery" value="Delivery" headingSize="medium">
-        <div className="grid grid-cols-1 gap-y-6 py-2">
+      <Accordion.Item title="Delivery & Pre-Order" value="delivery-preorder" headingSize="medium">
+        <div className="grid grid-cols-1 gap-y-4 py-4">
+          {/* Delivery Costs Section */}
           <div className="flex items-start gap-x-3">
-            <FastDelivery />
+            <Package className="w-5 h-5 text-gray-700 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold">Fast delivery</p>
-              <p className="text-ui-fg-subtle text-sm max-w-sm">
-                Your package will arrive in 3–5 business days at your pickup
-                location or at your home.
+              <h3 className={`${bebas.className} text-xl tracking-wide mb-1`}>Delivery Costs</h3>
+              <p className="text-sm text-ui-fg-subtle">
+                UK delivery £8.00 (3-5 days) • International £13.99
               </p>
             </div>
           </div>
+
+          {/* Pre-Orders Section */}
           <div className="flex items-start gap-x-3">
-            <Refresh />
+            <Clock className="w-5 h-5 text-gray-700 flex-shrink-0 mt-0.5" />
             <div>
-              <p className="font-semibold">Simple exchanges</p>
-              <p className="text-ui-fg-subtle text-sm max-w-sm">
-                Is the fit not quite right? We’ll exchange your product for a new
-                one.
+              <h3 className={`${bebas.className} text-xl tracking-wide mb-1`}>Pre-Orders</h3>
+              <p className="text-sm text-ui-fg-subtle">
+                Small batch production with 3-4 week dispatch time • Email updates at every stage
               </p>
             </div>
           </div>
-          <div className="flex items-start gap-x-3">
-            <Back />
-            <div>
-              <p className="font-semibold">Easy returns</p>
-              <p className="text-ui-fg-subtle text-sm max-w-sm">
-                Return your product and we’ll refund your money. No questions
-                asked.
-              </p>
-            </div>
+
+          {/* Link to Shipping Page */}
+          <div className="pt-2 border-t border-gray-200">
+            <LocalizedClientLink
+              href="/shipping"
+              className="text-sm text-black hover:text-gray-700 hover:underline transition-colors inline-flex items-center gap-1"
+            >
+              View full policy →
+            </LocalizedClientLink>
           </div>
         </div>
       </Accordion.Item>
     </Accordion>
   )
 }
-
-

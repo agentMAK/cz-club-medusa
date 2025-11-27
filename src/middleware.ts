@@ -108,6 +108,7 @@ export async function middleware(request: NextRequest) {
 
   const allow =
     pathname === "/waitlist" ||
+    pathname === "/passcode" ||
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/images") ||
@@ -115,6 +116,19 @@ export async function middleware(request: NextRequest) {
 
   if (allow) {
     return NextResponse.next()
+  }
+
+  // Check passcode protection
+  const SITE_ACCESS_CODE = process.env.SITE_ACCESS_CODE
+  if (SITE_ACCESS_CODE) {
+    // Check if user is authenticated (bypass passcode for logged-in users)
+    const authToken = request.cookies.get("_medusa_jwt")
+    const passcodeVerified = request.cookies.get("_site_access_verified")
+
+    // If user is not authenticated and hasn't verified passcode, redirect to passcode page
+    if (!authToken && passcodeVerified?.value !== "true") {
+      return NextResponse.redirect(new URL("/passcode", request.url), 307)
+    }
   }
 
   const ENABLE_WAITLIST = process.env.NEXT_PUBLIC_ENABLE_WAITLIST === "true"

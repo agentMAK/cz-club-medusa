@@ -37,12 +37,44 @@ export default function ProductActions({
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
+  // Otherwise, default to "M" if available
   useEffect(() => {
     if (product.variants?.length === 1) {
       const variantOptions = optionsAsKeymap(product.variants[0].options)
       setOptions(variantOptions ?? {})
+    } else if (product.variants && product.variants.length > 1) {
+      // Default to "M" if available
+      setOptions((currentOptions) => {
+        // Don't override if user has already made selections
+        const hasAnySelection = Object.values(currentOptions).some(v => v !== undefined)
+        if (hasAnySelection) {
+          return currentOptions
+        }
+        
+        if (!product.options) {
+          return currentOptions
+        }
+        
+        // Find a variant that has "M" for any option
+        const variantWithM = product.variants?.find((v) => {
+          return v.options?.some((opt) => opt.value === "M")
+        })
+        
+        if (variantWithM) {
+          const variantOptions = optionsAsKeymap(variantWithM.options)
+          // Only use this if it includes "M"
+          if (variantOptions) {
+            const hasM = Object.values(variantOptions).some(v => v === "M")
+            if (hasM) {
+              return variantOptions
+            }
+          }
+        }
+        
+        return currentOptions
+      })
     }
-  }, [product.variants])
+  }, [product.variants, product.options])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
@@ -158,7 +190,7 @@ export default function ProductActions({
           onClick={handleAddToCart}
           disabled={!!disabled || isAdding || (selectedVariant ? !inStock || !isValidVariant : false)}
           variant="primary"
-          className="w-full h-10"
+          className="w-full font-bebas text-xl border-2 border-black bg-black text-white rounded-full px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
           isLoading={isAdding}
           data-testid="add-product-button"
         >

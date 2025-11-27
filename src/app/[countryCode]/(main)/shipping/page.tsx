@@ -23,13 +23,23 @@ export default function ShippingPage() {
             <Package className="w-6 h-6 text-gray-700" />
             <h2 className={`${bebas.className} text-3xl`}>Delivery Costs</h2>
           </div>
-          <div className="space-y-2">
-            <p className="text-lg">
-              <span className="font-semibold">Standard Delivery:</span> £4.99
-            </p>
-            <p className="text-lg">
-              <span className="font-semibold">Free Delivery:</span> Orders over £100
-            </p>
+          <div className="space-y-3">
+            <div>
+              <p className="text-lg">
+                <span className="font-semibold">UK Standard Delivery:</span> £8.00
+              </p>
+              <p className="text-gray-600 text-sm mt-1">
+                Delivered within 3-5 business days. You will receive an email confirmation once your item has shipped with a tracking number.
+              </p>
+            </div>
+            <div>
+              <p className="text-lg">
+                <span className="font-semibold">International Delivery:</span> £13.99
+              </p>
+              <p className="text-gray-600 text-sm mt-1">
+                International shipping with tracking. Delivery times vary by location.
+              </p>
+            </div>
           </div>
         </div>
 
@@ -41,26 +51,19 @@ export default function ShippingPage() {
           </div>
           <div className="space-y-4 text-gray-800">
             <p>
-              Items marked as pre-order will take approximately <strong>1 week to arrive</strong> with us after your purchase. Once received, we allow 1–2 days for quality check, packaging, and dispatch.
+              Items offered on a pre-order basis are crafted in <strong>small batches</strong> to ensure precision craftsmanship and the highest production quality.
             </p>
+            <div>
+              <p className="font-semibold mb-2">Estimated Dispatch:</p>
+              <p>
+                Production takes <strong>3–4 weeks</strong> to ensure the fit, fabric, and finish meet our exacting standards. Once completed, your order is dispatched immediately and delivered according to your location.
+              </p>
+            </div>
             <p>
-              You can expect your full order to be delivered within <strong>2 weeks from the date of purchase</strong>.
+              You'll receive <strong>email updates at every stage</strong>—from production to dispatch to delivery—including tracking information once your item ships.
             </p>
             <p className="text-sm italic">
-              We appreciate your patience — pre-orders allow us to produce intentionally, reduce waste, and keep quality at the core of what we do.
-            </p>
-          </div>
-        </div>
-
-        {/* How Long Will It Take */}
-        <div className="w-full">
-          <h3 className={`${bebas.className} text-2xl mb-3`}>How long will it take to arrive?</h3>
-          <div className="space-y-3 text-gray-700">
-            <p>
-              Once we receive the Pre-Ordered items we will ship them to you within <strong>1-3 business days</strong>. You will receive an email confirmation once your item has shipped with a tracking number.
-            </p>
-            <p>
-              If you ordered numerous items in your Pre-order we will ship once your complete order is in stock. Please note that some items may arrive before others.
+              We appreciate your patience—pre-orders allow us to produce intentionally, reduce waste, and keep quality at the core of everything we create.
             </p>
           </div>
         </div>
@@ -83,17 +86,17 @@ export default function ShippingPage() {
             <h3 className={`${bebas.className} text-2xl text-amber-900`}>Can I cancel items that I have pre-ordered?</h3>
           </div>
           <div className="space-y-3 text-gray-800">
+            <p className="font-semibold">
+              Pre-orders cannot be cancelled once placed.
+            </p>
             <p>
-              Yes. Please contact us at{" "}
+              If you have any concerns about your order, please contact us at{" "}
               <a 
                 href="mailto:team.theczclub@gmail.com"
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
                 team.theczclub@gmail.com
               </a>
-            </p>
-            <p className="text-sm font-semibold">
-              Please note that cancelled Pre-Orders are subject to a 20% cancellation fee.
             </p>
           </div>
         </div>

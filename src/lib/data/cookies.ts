@@ -87,3 +87,20 @@ export const removeCartId = async () => {
     maxAge: -1,
   })
 }
+
+export const setPasscodeVerified = async () => {
+  const cookies = await nextCookies()
+  cookies.set("_site_access_verified", "true", {
+    maxAge: 60 * 60 * 24 * 7,
+    httpOnly: true,
+    sameSite: "strict",
+    secure: process.env.NODE_ENV === "production",
+    path: "/",
+  })
+}
+
+export const isPasscodeVerified = async (): Promise<boolean> => {
+  const cookies = await nextCookies()
+  const verificationCookie = cookies.get("_site_access_verified")
+  return verificationCookie?.value === "true"
+}

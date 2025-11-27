@@ -12,50 +12,22 @@ export default async function Footer() {
   const productCategories = await listCategories()
 
   return (
-    <footer className="border-t border-ui-border-base w-full">
+    <footer className="border-t border-ui-border-base w-full" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
       <div className="content-container flex flex-col w-full">
         <div className="flex flex-col gap-y-6 xsmall:flex-row items-start justify-between py-40">
           <div>
             <LocalizedClientLink
               href="/"
-              className="txt-compact-xlarge-plus text-ui-fg-subtle hover:text-ui-fg-base uppercase"
+              className="text-ui-fg-subtle text-4xl hover:text-ui-fg-base uppercase"
+              style={{ fontFamily: '"Bebas Neue", sans-serif' }}
             >
               CZ Club
             </LocalizedClientLink>
           </div>
-          <div className="text-small-regular gap-10 md:gap-x-16 grid grid-cols-2 sm:grid-cols-3">
+          <div className="text-base leading-6 font-normal" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
             <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Shop</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
-                <li>
-                  <LocalizedClientLink
-                    href="/"
-                    className="hover:text-ui-fg-base"
-                  >
-                    Home
-                  </LocalizedClientLink>
-                </li>
-                <li>
-                  <LocalizedClientLink
-                    href="/store"
-                    className="hover:text-ui-fg-base"
-                  >
-                    Shop
-                  </LocalizedClientLink>
-                </li>
-                <li>
-                  <LocalizedClientLink
-                    href="/events"
-                    className="hover:text-ui-fg-base"
-                  >
-                    Events
-                  </LocalizedClientLink>
-                </li>
-              </ul>
-            </div>
-            <div className="flex flex-col gap-y-2">
-              <span className="txt-small-plus txt-ui-fg-base">Support</span>
-              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle txt-small">
+              <span className="text-base font-semibold text-ui-fg-base" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>Support</span>
+              <ul className="grid grid-cols-1 gap-y-2 text-ui-fg-subtle text-base" style={{ fontFamily: '"Bebas Neue", sans-serif' }}>
                 <li>
                   <LocalizedClientLink
                     href="/contact"
