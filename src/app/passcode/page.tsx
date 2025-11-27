@@ -4,7 +4,7 @@ import Image from "next/image"
 import { Bebas_Neue } from "next/font/google"
 import { useState, FormEvent, useEffect } from "react"
 import { verifyPasscode } from "@lib/data/passcode"
-import { useRouter } from "next/navigation"
+import { useRouter, useParams } from "next/navigation"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
@@ -13,6 +13,7 @@ export default function PasscodePage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const router = useRouter()
+  const params = useParams()
 
   // Set body background to black when component mounts
   useEffect(() => {
@@ -33,9 +34,10 @@ export default function PasscodePage() {
       const result = await verifyPasscode(passcode)
       
       if (result.success) {
-        // Redirect to store page after successful verification
-        router.push("/store")
-        router.refresh()
+        // Get country code from URL or use default
+        const countryCode = params?.countryCode || 'gb'
+        // Redirect to store page with country code to avoid middleware redirect
+        window.location.href = `/${countryCode}/store`
       } else {
         setError("Invalid passcode. Please try again.")
         setPasscode("")
