@@ -1,6 +1,7 @@
 import { Metadata } from "next"
 
 import AllProductsGrid from "@modules/home/components/all-products-grid"
+import EventsWidget from "@modules/store/components/events-widget"
 import { getRegion } from "@lib/data/regions"
 
 export const metadata: Metadata = {

@@ -18,8 +18,41 @@ export default async function Nav() {
       <header className="relative h-20 mx-auto duration-200" style={{ backgroundColor: '#F1EEEB' }}>
         <nav className="txt-xsmall-plus px-5 md:px-10 text-ui-fg-subtle flex items-center justify-between w-full h-full text-small-regular">
           <div className="flex-1 basis-0 h-full flex items-center">
-            <div className="h-full">
+            {/* Mobile Menu Button */}
+            <div className="h-full block small:hidden">
               <SideMenu regions={regions} />
+            </div>
+            
+            {/* Desktop Navigation Links */}
+            <div className="hidden small:flex items-center gap-x-6 h-full">
+              <LocalizedClientLink
+                className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
+                href="/"
+                data-testid="nav-home-link"
+              >
+                Home
+              </LocalizedClientLink>
+              <LocalizedClientLink
+                className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
+                href="/store"
+                data-testid="nav-shop-link"
+              >
+                Shop
+              </LocalizedClientLink>
+              <LocalizedClientLink
+                className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
+                href="/events"
+                data-testid="nav-events-link"
+              >
+                Events
+              </LocalizedClientLink>
+              <LocalizedClientLink
+                className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
+                href="/contact"
+                data-testid="nav-contact-link"
+              >
+                Contact
+              </LocalizedClientLink>
             </div>
           </div>
 

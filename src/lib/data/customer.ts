@@ -127,6 +127,65 @@ export async function login(_currentState: unknown, formData: FormData) {
   }
 }
 
+export async function requestPasswordResetAction(
+  _currentState: unknown,
+  formData: FormData
+) {
+  const email = (formData.get("email") as string | null)?.trim()
+
+  if (!email) {
+    return { success: false, error: "Email is required" }
+  }
+
+  try {
+    await sdk.auth.resetPassword("customer", "emailpass", {
+      identifier: email,
+    })
+
+    return { success: true, error: null }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.toString() || "Failed to request password reset",
+    }
+  }
+}
+
+export async function resetPasswordAction(
+  _currentState: unknown,
+  formData: FormData
+) {
+  const token = formData.get("token") as string | null
+  const email = (formData.get("email") as string | null)?.trim()
+  const password = formData.get("password") as string | null
+
+  if (!token || !email || !password) {
+    return {
+      success: false,
+      error: "Token, email and password are required to reset the password",
+    }
+  }
+
+  try {
+    await sdk.auth.updateProvider(
+      "customer",
+      "emailpass",
+      {
+        email,
+        password,
+      },
+      token
+    )
+
+    return { success: true, error: null }
+  } catch (error: any) {
+    return {
+      success: false,
+      error: error?.toString() || "Failed to reset password",
+    }
+  }
+}
+
 export async function signout(countryCode: string) {
   await sdk.auth.logout()
 

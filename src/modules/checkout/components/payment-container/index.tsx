@@ -82,6 +82,7 @@ export const StripeCardContainer = ({
 
   const useOptions: StripeCardElementOptions = useMemo(() => {
     return {
+      hidePostalCode: true, // Use billing address postcode instead
       style: {
         base: {
           fontFamily: "Inter, sans-serif",

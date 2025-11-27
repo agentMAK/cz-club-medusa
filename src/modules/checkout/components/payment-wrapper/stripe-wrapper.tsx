@@ -22,6 +22,7 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
 }) => {
   const options: StripeElementsOptions = {
     clientSecret: paymentSession!.data?.client_secret as string | undefined,
+    locale: 'en-GB', // Use UK locale for "postcode" instead of "zip code"
   }
 
   if (!stripeKey) {
