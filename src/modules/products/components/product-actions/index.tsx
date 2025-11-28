@@ -167,6 +167,7 @@ export default function ProductActions({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+      metadata: isPreorder ? { is_preorder: true } : undefined,
     })
 
     setIsAdding(false)

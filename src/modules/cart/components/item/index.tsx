@@ -1,6 +1,6 @@
 "use client"
 
-import { Table, Text, clx } from "@medusajs/ui"
+import { Table, Text, clx, Badge } from "@medusajs/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
@@ -12,7 +12,7 @@ import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -23,6 +23,24 @@ type ItemProps = {
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Check if the item is a preorder
+  const isPreorder = useMemo((): boolean => {
+    // First check if metadata has preorder flag (set at add-to-cart time)
+    if (item.metadata?.is_preorder === true) {
+      return true
+    }
+    
+    // Fallback to checking variant inventory status
+    if (!item.variant) return false
+    
+    // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
+    return (
+      !!item.variant.manage_inventory &&
+      !!item.variant.allow_backorder &&
+      (item.variant?.inventory_quantity || 0) === 0
+    )
+  }, [item.variant, item.metadata])
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
@@ -70,6 +88,11 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           {item.product_title}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
+        {isPreorder && (
+          <Badge color="blue" className="mt-2 font-bebas">
+            PREORDER
+          </Badge>
+        )}
       </Table.Cell>
 
       {type === "full" && (

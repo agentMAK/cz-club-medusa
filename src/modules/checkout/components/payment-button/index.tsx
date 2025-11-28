@@ -59,6 +59,10 @@ const StripePaymentButton = ({
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
+        // Don't show error for Next.js redirects
+        if (err?.digest?.startsWith('NEXT_REDIRECT')) {
+          throw err // Re-throw so redirect still works
+        }
         setErrorMessage(err.message)
       })
       .finally(() => {
@@ -158,6 +162,10 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
+        // Don't show error for Next.js redirects
+        if (err?.digest?.startsWith('NEXT_REDIRECT')) {
+          throw err // Re-throw so redirect still works
+        }
         setErrorMessage(err.message)
       })
       .finally(() => {
