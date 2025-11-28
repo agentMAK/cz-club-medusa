@@ -13,7 +13,7 @@ export default function ContactPage() {
   return (
     <div className="content-container">
       <div className="flex flex-col items-center justify-center min-h-[60vh] gap-8 py-12">
-        <h1 className={`${bebas.className} text-6xl md:text-8xl font-bold tracking-wider`}>
+        <h1 className={`${bebas.className} text-6xl md:text-8xl font-bold tracking-wider text-center`}>
           CUSTOMER SERVICE
         </h1>
         <div className="text-center max-w-2xl space-y-8">
