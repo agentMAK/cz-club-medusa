@@ -11,6 +11,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { Clock, Check } from "lucide-react"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -129,6 +130,18 @@ export default function ProductActions({
     return false
   }, [selectedVariant])
 
+  // check if the selected variant is a preorder
+  const isPreorder = useMemo((): boolean => {
+    if (!selectedVariant) return false
+    
+    // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
+    return (
+      !!selectedVariant.manage_inventory &&
+      !!selectedVariant.allow_backorder &&
+      (selectedVariant?.inventory_quantity || 0) === 0
+    )
+  }, [selectedVariant])
+
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
@@ -186,15 +199,29 @@ export default function ProductActions({
 
         <ProductPrice product={product} variant={selectedVariant} />
 
+        {selectedVariant && inStock && !isPreorder && (
+          <div className="flex items-center gap-2 text-green-700">
+            <Check className="w-4 h-4" />
+            <span className="text-sm font-medium">In stock</span>
+          </div>
+        )}
+
+        {isPreorder && (
+          <div className="flex items-center gap-2 text-blue-700">
+            <Clock className="w-4 h-4" />
+            <span className="text-sm font-medium">Pre-Order • Ships in 3-4 weeks</span>
+          </div>
+        )}
+
         <Button
           onClick={handleAddToCart}
           disabled={!!disabled || isAdding || (selectedVariant ? !inStock || !isValidVariant : false)}
           variant="primary"
-          className="w-full font-bebas text-xl border-2 border-black bg-black text-white rounded-full px-4 py-2 disabled:opacity-50 disabled:cursor-not-allowed"
+          className="w-full font-bebas text-xl border-2 border-black bg-black text-white rounded-full px-4 py-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
-          {"Add to cart"}
+          {isPreorder ? "Pre-Order Now" : "Add to cart"}
         </Button>
         {errorMessage && (
           <p className="text-sm text-red-600 mt-2" role="alert">
@@ -207,6 +234,7 @@ export default function ProductActions({
           options={options}
           updateOptions={setOptionValue}
           inStock={inStock}
+          isPreorder={isPreorder}
           handleAddToCart={handleAddToCart}
           isAdding={isAdding}
           show={!inView}

@@ -33,28 +33,30 @@ const ImageGallery = ({ images }: ImageGalleryProps) => {
       </div>
 
       {validImages.length > 1 && (
-        <ul className="flex items-center justify-center gap-3">
-          {validImages.map((img, idx) => (
-            <li key={img.id || idx}>
-              <button
-                type="button"
-                onClick={() => setSelectedIndex(idx)}
-                className={`relative h-16 w-16 overflow-hidden rounded-md border ${
-                  idx === selectedIndex ? "border-ui-fg-base" : "border-transparent"
-                } focus:outline-none focus:ring-2 focus:ring-ui-fg-base`}
-                aria-label={`Show image ${idx + 1}`}
-              >
-                <Image
-                  src={img.url as string}
-                  alt={`Thumbnail ${idx + 1}`}
-                  fill
-                  sizes="64px"
-                  style={{ objectFit: "cover" }}
-                />
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="w-full overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+          <ul className="flex items-center justify-center gap-3 flex-nowrap min-w-min px-2">
+            {validImages.map((img, idx) => (
+              <li key={img.id || idx} className="flex-shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setSelectedIndex(idx)}
+                  className={`relative h-16 w-16 overflow-hidden rounded-md border ${
+                    idx === selectedIndex ? "border-ui-fg-base" : "border-transparent"
+                  } focus:outline-none focus:ring-2 focus:ring-ui-fg-base`}
+                  aria-label={`Show image ${idx + 1}`}
+                >
+                  <Image
+                    src={img.url as string}
+                    alt={`Thumbnail ${idx + 1}`}
+                    fill
+                    sizes="64px"
+                    style={{ objectFit: "cover" }}
+                  />
+                </button>
+              </li>
+            ))}
+          </ul>
+        </div>
       )}
     </div>
   )

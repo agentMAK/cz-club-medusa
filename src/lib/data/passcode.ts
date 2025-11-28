@@ -49,3 +49,10 @@ export async function isPasscodeVerified(): Promise<boolean> {
   return verificationCookie?.value === "true"
 }
 
+/**
+ * Checks if a passcode is required to access the store
+ */
+export async function isPasscodeRequired(): Promise<boolean> {
+  return !!process.env.SITE_ACCESS_CODE
+}
+

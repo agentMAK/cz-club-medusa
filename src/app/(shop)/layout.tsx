@@ -1,5 +1,6 @@
 import { getBaseURL } from "@lib/util/env"
 import { Metadata } from "next"
+import { Analytics } from "@vercel/analytics/react"
 import "styles/globals.css"
 
 export const metadata: Metadata = {
@@ -20,12 +21,14 @@ export const metadata: Metadata = {
   },
 }
 
-export default function RootLayout(props: { children: React.ReactNode }) {
+export default function ShopLayout(props: { children: React.ReactNode }) {
   return (
     <html lang="en" data-mode="dark" suppressHydrationWarning>
       <body style={{ backgroundColor: '#F1EEEB' }}>
         <main className="relative">{props.children}</main>
+        <Analytics />
       </body>
     </html>
   )
 }
+

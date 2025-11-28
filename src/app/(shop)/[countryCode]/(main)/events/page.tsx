@@ -15,13 +15,13 @@ export default function EventsPage() {
       <div className="w-full bg-white py-12 px-6">
         <div className="max-w-7xl mx-auto">
           <h1
-            className={`${bebas.className} text-5xl md:text-6xl text-black mb-8 text-left tracking-wide`}
+            className={`${bebas.className} text-5xl md:text-6xl text-black mb-8 text-center md:text-left tracking-wide`}
           >
             EVENTS
           </h1>
 
           <div
-            className={`${inter.className} space-y-4 text-black leading-relaxed text-sm md:text-base font-light text-left`}
+            className={`${inter.className} space-y-4 text-black leading-relaxed text-sm md:text-base font-light text-center md:text-left`}
           >
             <p>
               At CZ The Club, our underground fashion shows were built for the
