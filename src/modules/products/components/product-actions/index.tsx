@@ -130,15 +130,20 @@ export default function ProductActions({
     return false
   }, [selectedVariant])
 
-  // check if the selected variant is a preorder
+// check if the selected variant is a preorder
   const isPreorder = useMemo((): boolean => {
     if (!selectedVariant) return false
+    
+    // Consider it a preorder if inventory_quantity is 0 or negative (oversold/backordered)
+    const hasZeroOrNegativeInventory = 
+      typeof selectedVariant.inventory_quantity === 'number' && 
+      selectedVariant.inventory_quantity <= 0
     
     // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
     return (
       !!selectedVariant.manage_inventory &&
       !!selectedVariant.allow_backorder &&
-      (selectedVariant?.inventory_quantity || 0) === 0
+      hasZeroOrNegativeInventory
     )
   }, [selectedVariant])
 

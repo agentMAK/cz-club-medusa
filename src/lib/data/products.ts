@@ -53,7 +53,7 @@ export const listProducts = async ({
     ...(await getCacheOptions("products")),
   }
 
-  const fields = "*variants.calculated_price,+variants.inventory_quantity,+metadata,+tags"
+  const fields = "*variants.calculated_price,+variants.inventory_quantity,+variants.manage_inventory,+variants.allow_backorder,+metadata,+tags"
 
   return sdk.client
     .fetch<{ products: HttpTypes.StoreProduct[]; count: number }>(

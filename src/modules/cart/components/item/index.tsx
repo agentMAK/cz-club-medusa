@@ -32,16 +32,20 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
     }
     
     // Fallback to checking variant inventory status
-    if (!item.variant) return false
+    if (!item.variant) {
+      return false
+    }
     
-    // Only consider it a preorder if inventory_quantity is explicitly 0 (not undefined)
-    const hasZeroInventory = item.variant.inventory_quantity === 0
+    // Consider it a preorder if inventory_quantity is 0 or negative (oversold/backordered)
+    const hasZeroOrNegativeInventory = 
+      typeof item.variant.inventory_quantity === 'number' && 
+      item.variant.inventory_quantity <= 0
     
     // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
     return (
       !!item.variant.manage_inventory &&
       !!item.variant.allow_backorder &&
-      hasZeroInventory
+      hasZeroOrNegativeInventory
     )
   }, [item.variant, item.metadata])
 
