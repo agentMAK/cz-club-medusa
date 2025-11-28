@@ -99,6 +99,12 @@ export default function LandingPage() {
                 SIGN UP
               </Link>
               <Link
+                href={`/${countryCode}/events`}
+                className="text-xl hover:text-gray-500 transition-colors"
+              >
+                EVENTS
+              </Link>
+              <Link
                 href={`/${countryCode}/contact`}
                 className="text-xl hover:text-gray-500 transition-colors"
               >
