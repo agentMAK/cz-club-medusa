@@ -39,14 +39,14 @@ const Item = ({ item, currencyCode }: ItemProps) => {
   }, [item.variant, item.metadata])
 
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <Table.Row className="w-full !bg-transparent" data-testid="product-row">
+      <Table.Cell className="!pl-0 p-4 w-24 !bg-transparent">
         <div className="flex w-16">
           <Thumbnail thumbnail={item.thumbnail} size="square" />
         </div>
       </Table.Cell>
 
-      <Table.Cell className="text-left">
+      <Table.Cell className="text-left !bg-transparent">
         <Text
           className="txt-medium-plus text-ui-fg-base"
           data-testid="product-name"
@@ -61,7 +61,7 @@ const Item = ({ item, currencyCode }: ItemProps) => {
         )}
       </Table.Cell>
 
-      <Table.Cell className="!pr-0">
+      <Table.Cell className="!pr-0 !bg-transparent">
         <span className="!pr-0 flex flex-col items-end h-full justify-center">
           <span className="flex gap-x-1 ">
             <Text className="text-ui-fg-muted">
