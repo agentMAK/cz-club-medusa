@@ -27,7 +27,7 @@ export default function DeliveryInfo() {
             <div>
               <h3 className={`${bebas.className} text-xl tracking-wide mb-1`}>Pre-Orders</h3>
               <p className="text-sm text-ui-fg-subtle">
-                Small batch production with 3-4 week dispatch time • Email updates at every stage
+                Small batch production • 2–3 weeks production, typically arrives by 4th week • Email updates at every stage
               </p>
             </div>
           </div>

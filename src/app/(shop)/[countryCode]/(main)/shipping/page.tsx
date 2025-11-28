@@ -51,19 +51,19 @@ export default function ShippingPage() {
           </div>
           <div className="space-y-4 text-gray-800">
             <p>
-              Items offered on a pre-order basis are crafted in <strong>small batches</strong> to ensure precision craftsmanship and the highest production quality.
+              Items offered on a pre-order basis are crafted in small batches to ensure precision craftsmanship and the highest production quality.
             </p>
             <div>
               <p className="font-semibold mb-2">Estimated Dispatch:</p>
               <p>
-                Production takes <strong>3–4 weeks</strong> to ensure the fit, fabric, and finish meet our exacting standards. Once completed, your order is dispatched immediately and delivered according to your location.
+                Production takes 2–3 weeks to perfect the fit, fabric, and finish to our standards. Once completed, your order is shipped immediately and typically arrives by the 4th week, depending on your location.
               </p>
             </div>
             <p>
-              You'll receive <strong>email updates at every stage</strong>—from production to dispatch to delivery—including tracking information once your item ships.
+              You'll receive email updates at every stage—from production to dispatch to delivery—along with full tracking once your item ships.
             </p>
             <p className="text-sm italic">
-              We appreciate your patience—pre-orders allow us to produce intentionally, reduce waste, and keep quality at the core of everything we create.
+              We appreciate your patience—pre-orders allow us to create intentionally, reduce waste, and keep quality at the core of everything we do.
             </p>
           </div>
         </div>
@@ -72,10 +72,10 @@ export default function ShippingPage() {
         <div className="w-full bg-gray-50 p-6 rounded-lg">
           <div className="flex items-center gap-3 mb-4">
             <CreditCard className="w-6 h-6 text-gray-700" />
-            <h3 className={`${bebas.className} text-2xl`}>When will you charge me for my item?</h3>
+            <h3 className={`${bebas.className} text-2xl`}>WHEN WILL YOU CHARGE ME?</h3>
           </div>
           <p className="text-gray-700">
-            To secure your item, you will be <strong>charged at the time of purchase</strong>.
+            Payment is taken at the time you place your order, securing your piece in the production queue.
           </p>
         </div>
 
