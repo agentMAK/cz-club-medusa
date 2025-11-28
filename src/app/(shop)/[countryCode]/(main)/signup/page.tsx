@@ -119,16 +119,16 @@ export default function SignUpPage() {
               
               <form
                 onSubmit={handleSubmit}
-                className="flex flex-col items-center gap-4 w-full max-w-md mx-auto"
+                className="flex flex-col sm:flex-row items-center gap-4 w-full max-w-md mx-auto"
               >
-                <div className="flex items-center gap-3 w-full">
+                <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full">
                   <input
                     type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="Enter your email"
                     aria-label="Email address"
-                    className="flex-1 px-4 py-3 rounded-md border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex-1 w-full px-4 py-3 rounded-md border border-gray-300 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:border-transparent disabled:opacity-50 disabled:cursor-not-allowed"
                     required
                     disabled={isSubmitting}
                   />
@@ -136,7 +136,7 @@ export default function SignUpPage() {
                   <button
                     type="submit"
                     disabled={isSubmitting}
-                    className="px-6 py-3 rounded-md bg-black text-white font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
+                    className="w-full sm:w-auto px-6 py-3 rounded-md bg-black text-white font-semibold hover:bg-gray-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     {isSubmitting ? "..." : "SUBSCRIBE"}
                   </button>
