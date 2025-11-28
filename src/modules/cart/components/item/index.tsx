@@ -1,6 +1,6 @@
 "use client"
 
-import { Table, Text, clx } from "@medusajs/ui"
+import { Table, Text, clx, Badge } from "@medusajs/ui"
 import { updateLineItem } from "@lib/data/cart"
 import { HttpTypes } from "@medusajs/types"
 import CartItemSelect from "@modules/cart/components/cart-item-select"
@@ -12,7 +12,7 @@ import LineItemUnitPrice from "@modules/common/components/line-item-unit-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
 import Spinner from "@modules/common/icons/spinner"
 import Thumbnail from "@modules/products/components/thumbnail"
-import { useState } from "react"
+import { useState, useMemo } from "react"
 
 type ItemProps = {
   item: HttpTypes.StoreCartLineItem
@@ -23,6 +23,31 @@ type ItemProps = {
 const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const [updating, setUpdating] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Check if the item is a preorder
+  const isPreorder = useMemo((): boolean => {
+    // First check if metadata has preorder flag (set at add-to-cart time)
+    if (item.metadata?.is_preorder === true) {
+      return true
+    }
+    
+    // Fallback to checking variant inventory status
+    if (!item.variant) {
+      return false
+    }
+    
+    // Consider it a preorder if inventory_quantity is 0 or negative (oversold/backordered)
+    const hasZeroOrNegativeInventory = 
+      typeof item.variant.inventory_quantity === 'number' && 
+      item.variant.inventory_quantity <= 0
+    
+    // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
+    return (
+      !!item.variant.manage_inventory &&
+      !!item.variant.allow_backorder &&
+      hasZeroOrNegativeInventory
+    )
+  }, [item.variant, item.metadata])
 
   const changeQuantity = async (quantity: number) => {
     setError(null)
@@ -45,8 +70,8 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
   const maxQuantity = item.variant?.manage_inventory ? 10 : maxQtyFromInventory
 
   return (
-    <Table.Row className="w-full" data-testid="product-row">
-      <Table.Cell className="!pl-0 p-4 w-24">
+    <Table.Row className="w-full !bg-transparent hover:!bg-transparent" data-testid="product-row">
+      <Table.Cell className="!pl-0 p-4 w-24 !bg-transparent">
         <LocalizedClientLink
           href={`/products/${item.product_handle}`}
           className={clx("flex", {
@@ -62,7 +87,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </LocalizedClientLink>
       </Table.Cell>
 
-      <Table.Cell className="text-left">
+      <Table.Cell className="text-left !bg-transparent">
         <Text
           className="txt-medium-plus text-ui-fg-base"
           data-testid="product-title"
@@ -70,10 +95,15 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
           {item.product_title}
         </Text>
         <LineItemOptions variant={item.variant} data-testid="product-variant" />
+        {isPreorder && (
+          <Badge color="blue" className="mt-2 font-bebas">
+            PREORDER
+          </Badge>
+        )}
       </Table.Cell>
 
       {type === "full" && (
-        <Table.Cell>
+        <Table.Cell className="!bg-transparent">
           <div className="flex gap-2 items-center w-28">
             <DeleteButton id={item.id} data-testid="product-delete-button" />
             <CartItemSelect
@@ -105,7 +135,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
       )}
 
       {type === "full" && (
-        <Table.Cell className="hidden small:table-cell">
+        <Table.Cell className="hidden small:table-cell !bg-transparent">
           <LineItemUnitPrice
             item={item}
             style="tight"
@@ -114,7 +144,7 @@ const Item = ({ item, type = "full", currencyCode }: ItemProps) => {
         </Table.Cell>
       )}
 
-      <Table.Cell className="!pr-0">
+      <Table.Cell className="!pr-0 !bg-transparent">
         <span
           className={clx("!pr-0", {
             "flex flex-col items-end h-full justify-center": type === "preview",

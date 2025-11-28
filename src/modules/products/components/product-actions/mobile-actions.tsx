@@ -17,6 +17,7 @@ type MobileActionsProps = {
   options: Record<string, string | undefined>
   updateOptions: (title: string, value: string) => void
   inStock?: boolean
+  isPreorder: boolean
   handleAddToCart: () => void
   isAdding?: boolean
   show: boolean
@@ -29,6 +30,7 @@ const MobileActions: React.FC<MobileActionsProps> = ({
   options,
   updateOptions,
   inStock,
+  isPreorder,
   handleAddToCart,
   isAdding,
   show,
@@ -127,6 +129,8 @@ const MobileActions: React.FC<MobileActionsProps> = ({
                   ? "Select variant"
                   : !inStock
                   ? "Out of stock"
+                  : isPreorder
+                  ? "Pre-Order Now"
                   : "Add to cart"}
               </Button>
             </div>

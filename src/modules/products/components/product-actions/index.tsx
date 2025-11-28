@@ -11,6 +11,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
+import { Clock, Check } from "lucide-react"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -33,15 +34,48 @@ export default function ProductActions({
 }: ProductActionsProps) {
   const [options, setOptions] = useState<Record<string, string | undefined>>({})
   const [isAdding, setIsAdding] = useState(false)
+  const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
 
   // If there is only 1 variant, preselect the options
+  // Otherwise, default to "M" if available
   useEffect(() => {
     if (product.variants?.length === 1) {
       const variantOptions = optionsAsKeymap(product.variants[0].options)
       setOptions(variantOptions ?? {})
+    } else if (product.variants && product.variants.length > 1) {
+      // Default to "M" if available
+      setOptions((currentOptions) => {
+        // Don't override if user has already made selections
+        const hasAnySelection = Object.values(currentOptions).some(v => v !== undefined)
+        if (hasAnySelection) {
+          return currentOptions
+        }
+        
+        if (!product.options) {
+          return currentOptions
+        }
+        
+        // Find a variant that has "M" for any option
+        const variantWithM = product.variants?.find((v) => {
+          return v.options?.some((opt) => opt.value === "M")
+        })
+        
+        if (variantWithM) {
+          const variantOptions = optionsAsKeymap(variantWithM.options)
+          // Only use this if it includes "M"
+          if (variantOptions) {
+            const hasM = Object.values(variantOptions).some(v => v === "M")
+            if (hasM) {
+              return variantOptions
+            }
+          }
+        }
+        
+        return currentOptions
+      })
     }
-  }, [product.variants])
+  }, [product.variants, product.options])
 
   const selectedVariant = useMemo(() => {
     if (!product.variants || product.variants.length === 0) {
@@ -60,6 +94,8 @@ export default function ProductActions({
       ...prev,
       [optionId]: value,
     }))
+    // Clear error when user selects an option
+    setErrorMessage(null)
   }
 
   //check if the selected options produce a valid variant
@@ -94,20 +130,49 @@ export default function ProductActions({
     return false
   }, [selectedVariant])
 
+// check if the selected variant is a preorder
+  const isPreorder = useMemo((): boolean => {
+    if (!selectedVariant) return false
+    
+    // Consider it a preorder if inventory_quantity is 0 or negative (oversold/backordered)
+    const hasZeroOrNegativeInventory = 
+      typeof selectedVariant.inventory_quantity === 'number' && 
+      selectedVariant.inventory_quantity <= 0
+    
+    // Check if it's a preorder (managing inventory, backorders allowed, but no current stock)
+    return (
+      !!selectedVariant.manage_inventory &&
+      !!selectedVariant.allow_backorder &&
+      hasZeroOrNegativeInventory
+    )
+  }, [selectedVariant])
+
   const actionsRef = useRef<HTMLDivElement>(null)
 
   const inView = useIntersection(actionsRef, "0px")
 
   // add the selected variant to the cart
   const handleAddToCart = async () => {
-    if (!selectedVariant?.id) return null
+    // Require variant selection
+    if (!selectedVariant) {
+      setErrorMessage("Please select a variant before adding to cart")
+      return
+    }
 
+    // Prevent adding when not in stock or invalid
+    if (!inStock || !isValidVariant) {
+      setErrorMessage("This variant is currently out of stock")
+      return
+    }
+
+    setErrorMessage(null)
     setIsAdding(true)
 
     await addToCart({
       variantId: selectedVariant.id,
       quantity: 1,
       countryCode,
+      metadata: isPreorder ? { is_preorder: true } : undefined,
     })
 
     setIsAdding(false)
@@ -140,32 +205,42 @@ export default function ProductActions({
 
         <ProductPrice product={product} variant={selectedVariant} />
 
+        {selectedVariant && inStock && !isPreorder && (
+          <div className="flex items-center gap-2 text-green-700">
+            <Check className="w-4 h-4" />
+            <span className="text-sm font-medium">In stock</span>
+          </div>
+        )}
+
+        {isPreorder && (
+          <div className="flex items-center gap-2 text-blue-700">
+            <Clock className="w-4 h-4" />
+            <span className="text-sm font-medium">Pre-Order • Ships in 2-3 weeks</span>
+          </div>
+        )}
+
         <Button
           onClick={handleAddToCart}
-          disabled={
-            !inStock ||
-            !selectedVariant ||
-            !!disabled ||
-            isAdding ||
-            !isValidVariant
-          }
+          disabled={!!disabled || isAdding || (selectedVariant ? !inStock || !isValidVariant : false)}
           variant="primary"
-          className="w-full h-10"
+          className="w-full font-bebas text-xl border-2 border-black bg-black text-white rounded-full px-4 py-2 mt-2 disabled:opacity-50 disabled:cursor-not-allowed"
           isLoading={isAdding}
           data-testid="add-product-button"
         >
-          {!selectedVariant && !options
-            ? "Select variant"
-            : !inStock || !isValidVariant
-            ? "Out of stock"
-            : "Add to cart"}
+          {isPreorder ? "Pre-Order Now" : "Add to cart"}
         </Button>
+        {errorMessage && (
+          <p className="text-sm text-red-600 mt-2" role="alert">
+            {errorMessage}
+          </p>
+        )}
         <MobileActions
           product={product}
           variant={selectedVariant}
           options={options}
           updateOptions={setOptionValue}
           inStock={inStock}
+          isPreorder={isPreorder}
           handleAddToCart={handleAddToCart}
           isAdding={isAdding}
           show={!inView}

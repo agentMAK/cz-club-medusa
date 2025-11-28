@@ -106,20 +106,60 @@ async function getCountryCode(
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl
 
-  const allow =
-    pathname === "/waitlist" ||
+  // Allow static assets and Next.js internals to pass through
+  const allowStatic =
     pathname.startsWith("/_next") ||
     pathname === "/favicon.ico" ||
     pathname.startsWith("/images") ||
     pathname.startsWith("/assets")
 
-  if (allow) {
+  if (allowStatic) {
     return NextResponse.next()
   }
 
+  // Extract path parts
+  const pathParts = pathname.split("/").filter(Boolean)
+  const countryCodeFromUrl = pathParts[0]
+  const pathWithoutCountry = pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
+  
+  // Identify page types
+  const isRootPage = pathParts.length === 1  // just /{countryCode}
+  const isWaitlistPage = pathWithoutCountry === "/waitlist"
+  
+  // Check if this is a protected route (store or products only - NOT root page)
+  // Root page is where passcode entry happens, so it should always be accessible
+  const isProtectedRoute = 
+    pathWithoutCountry === "/store" || 
+    pathWithoutCountry.startsWith("/products")
+
+  // Get environment variables (ENABLE_WAITLIST defaults to false if not defined)
   const ENABLE_WAITLIST = process.env.NEXT_PUBLIC_ENABLE_WAITLIST === "true"
-  if (ENABLE_WAITLIST) {
-    return NextResponse.redirect(new URL("/waitlist", request.url), 307)
+  const SITE_ACCESS_CODE = process.env.SITE_ACCESS_CODE
+  
+  // Get verification status
+  const passcodeVerified = request.cookies.get("_site_access_verified")?.value === "true"
+  const authToken = request.cookies.get("_medusa_jwt")
+  const isVerified = passcodeVerified || !!authToken
+
+  // Handle waitlist page access
+  if (isWaitlistPage) {
+    // Allow through if waitlist is enabled
+    if (ENABLE_WAITLIST) {
+      return NextResponse.next()
+    }
+    // If waitlist is NOT enabled, redirect to root
+    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}`, request.url), 307)
+  }
+
+  // PRIORITY 1: Waitlist protection for root + store + products
+  if (ENABLE_WAITLIST && (isRootPage || isProtectedRoute)) {
+    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}/waitlist`, request.url), 307)
+  }
+
+  // PRIORITY 2: Passcode protection (only store & products - passcode entry happens on root page)
+  if (SITE_ACCESS_CODE && isProtectedRoute && !isVerified) {
+    // Redirect back to root page where user can enter passcode
+    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}`, request.url), 307)
   }
 
   let redirectUrl = request.nextUrl.href

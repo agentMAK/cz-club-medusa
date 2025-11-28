@@ -21,6 +21,7 @@ module.exports = {
         padding: "padding-top padding-right padding-bottom padding-left",
       },
       colors: {
+        white: "#F1EEEB",
         grey: {
           0: "#FFFFFF",
           5: "#F9FAFB",
@@ -70,6 +71,7 @@ module.exports = {
           "sans-serif",
         ],
         blackhan: ['"Black Han Sans"', "sans-serif"],
+        bebas: ['"Bebas Neue"', "sans-serif"],
       },
       keyframes: {
         ring: {

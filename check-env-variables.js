@@ -7,6 +7,11 @@ const requiredEnvs = [
     description:
       "Learn how to create a publishable key: https://docs.medusajs.com/v2/resources/storefront-development/publishable-api-keys",
   },
+  {
+    key: "NEXT_PUBLIC_STRIPE_KEY",
+    description:
+      "Your Stripe publishable key (pk_test_... or pk_live_...). See https://docs.medusajs.com/resources/storefront-development/checkout/payment/stripe",
+  },
 ]
 
 function checkEnvVariables() {
