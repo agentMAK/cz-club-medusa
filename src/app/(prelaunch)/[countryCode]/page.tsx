@@ -70,89 +70,90 @@ export default function LandingPage() {
   }
 
   return (
-    <main className="min-h-screen bg-black text-white flex flex-col">
-      <div className="flex-1 flex flex-col items-center justify-center gap-8">
+    <main className="min-h-screen bg-black text-white relative flex flex-col items-center justify-center">
+      {/* Centered logo and MEMBERS ONLY section */}
+      <div className="flex flex-col items-center gap-8">
         <Image
           src="/images/cz-logo.png"
           alt="CZ Club Logo"
           height={70}
           width={119}
         />
-        <div
-          className={`${bebas.className} flex flex-col items-center justify-center gap-1`}
-        >
-          <p className="text-5xl font-bold">MEMBERS ONLY</p>
-
-          {!showPasscode ? (
-            <div className="flex flex-col items-center gap-4 mt-6">
-              <button
-                onClick={handleEnterClick}
-                disabled={isCheckingAccess}
-                className="text-xl hover:text-gray-500 transition-colors disabled:text-gray-600"
-              >
-                {isCheckingAccess ? "..." : "ENTER"}
-              </button>
-              <Link
-                href={`/${countryCode}/signup`}
-                className="text-xl hover:text-gray-500 transition-colors"
-              >
-                SIGN UP
-              </Link>
-              <Link
-                href={`/${countryCode}/events`}
-                className="text-xl hover:text-gray-500 transition-colors"
-              >
-                EVENTS
-              </Link>
-              <Link
-                href={`/${countryCode}/contact`}
-                className="text-xl hover:text-gray-500 transition-colors"
-              >
-                CONTACT
-              </Link>
-            </div>
-          ) : (
-            <form
-              onSubmit={handlePasscodeSubmit}
-              className="flex flex-col items-center gap-4 mt-6"
-            >
-              <input
-                type="password"
-                value={passcode}
-                onChange={(e) => setPasscode(e.target.value)}
-                placeholder="ACCESS CODE"
-                className="bg-black border border-white/30 text-white text-center px-6 py-3 text-xl focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
-                autoFocus
-                disabled={isLoading}
-              />
-
-              {error && <p className="text-red-500 text-sm">{error}</p>}
-
-              <button
-                type="submit"
-                disabled={isLoading || !passcode}
-                className="text-xl hover:text-gray-500 transition-colors disabled:text-gray-600 disabled:cursor-not-allowed"
-              >
-                {isLoading ? "VERIFYING..." : "ENTER"}
-              </button>
-
-              <button
-                type="button"
-                onClick={() => {
-                  setShowPasscode(false)
-                  setError("")
-                  setPasscode("")
-                }}
-                className="text-sm text-white/60 hover:text-white/80 transition-colors"
-              >
-                BACK
-              </button>
-            </form>
-          )}
-        </div>
+        <p className={`${bebas.className} text-5xl font-bold`}>MEMBERS ONLY</p>
       </div>
 
-      <div className="mb-16 flex items-center justify-center gap-6 text-white/80">
+      {/* Nav buttons directly below */}
+      <div className={`${bebas.className} flex flex-col items-center`}>
+        {!showPasscode ? (
+          <div className="flex flex-col items-center gap-4 mt-6">
+            <button
+              onClick={handleEnterClick}
+              disabled={isCheckingAccess}
+              className="text-xl hover:text-gray-500 transition-colors disabled:text-gray-600"
+            >
+              {isCheckingAccess ? "..." : "ENTER"}
+            </button>
+            <Link
+              href={`/${countryCode}/signup`}
+              className="text-xl hover:text-gray-500 transition-colors"
+            >
+              SIGN UP
+            </Link>
+            <Link
+              href={`/${countryCode}/events`}
+              className="text-xl hover:text-gray-500 transition-colors"
+            >
+              EVENTS
+            </Link>
+            <Link
+              href={`/${countryCode}/contact`}
+              className="text-xl hover:text-gray-500 transition-colors"
+            >
+              CONTACT
+            </Link>
+          </div>
+        ) : (
+          <form
+            onSubmit={handlePasscodeSubmit}
+            className="flex flex-col items-center gap-4 mt-6"
+          >
+            <input
+              type="password"
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              placeholder="ACCESS CODE"
+              className="bg-black border border-white/30 text-white text-center px-6 py-3 text-xl focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+              autoFocus
+              disabled={isLoading}
+            />
+
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+
+            <button
+              type="submit"
+              disabled={isLoading || !passcode}
+              className="text-xl hover:text-gray-500 transition-colors disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              {isLoading ? "VERIFYING..." : "ENTER"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowPasscode(false)
+                setError("")
+                setPasscode("")
+              }}
+              className="text-sm text-white/60 hover:text-white/80 transition-colors"
+            >
+              BACK
+            </button>
+          </form>
+        )}
+      </div>
+
+      {/* Social icons fixed at bottom */}
+      <div className="absolute bottom-16 left-1/2 -translate-x-1/2 flex items-center justify-center gap-6 text-white/80">
         <a
           href="https://www.instagram.com/theczclub_/"
           target="_blank"
