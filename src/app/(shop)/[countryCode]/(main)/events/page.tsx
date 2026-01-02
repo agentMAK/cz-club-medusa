@@ -1,6 +1,12 @@
+import { Metadata } from "next"
 import { Bebas_Neue, Inter } from "next/font/google"
 import EmailSignup from "@modules/events/components/email-signup"
 import MasonryLayout from "@modules/events/components/masonry-layout"
+
+export const metadata: Metadata = {
+  title: "Events | CZ CLUB",
+  description: "CZ Club underground fashion shows and events.",
+}
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 const inter = Inter({

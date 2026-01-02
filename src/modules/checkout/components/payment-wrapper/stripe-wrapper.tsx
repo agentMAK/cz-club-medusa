@@ -1,6 +1,6 @@
 "use client"
 
-import { Stripe, StripeElementsOptions } from "@stripe/stripe-js"
+import { Stripe, StripeElementsOptions, Appearance } from "@stripe/stripe-js"
 import { Elements } from "@stripe/react-stripe-js"
 import { HttpTypes } from "@medusajs/types"
 import { createContext } from "react"
@@ -20,9 +20,50 @@ const StripeWrapper: React.FC<StripeWrapperProps> = ({
   stripePromise,
   children,
 }) => {
+  // Appearance configuration for Payment Element
+  const appearance: Appearance = {
+    theme: "stripe",
+    variables: {
+      colorPrimary: "#000000",
+      colorBackground: "#ffffff",
+      colorText: "#1a1a1a",
+      colorDanger: "#df1b41",
+      fontFamily: "Inter, system-ui, sans-serif",
+      borderRadius: "6px",
+      spacingUnit: "4px",
+    },
+    rules: {
+      ".Input": {
+        border: "1px solid #e5e7eb",
+        boxShadow: "none",
+        padding: "12px",
+      },
+      ".Input:focus": {
+        border: "1px solid #000000",
+        boxShadow: "0 0 0 1px #000000",
+      },
+      ".Label": {
+        fontWeight: "500",
+        marginBottom: "8px",
+      },
+      ".Tab": {
+        border: "1px solid #e5e7eb",
+        boxShadow: "none",
+      },
+      ".Tab:hover": {
+        border: "1px solid #000000",
+      },
+      ".Tab--selected": {
+        border: "1px solid #000000",
+        boxShadow: "0 0 0 1px #000000",
+      },
+    },
+  }
+
   const options: StripeElementsOptions = {
     clientSecret: paymentSession!.data?.client_secret as string | undefined,
-    locale: 'en-GB', // Use UK locale for "postcode" instead of "zip code"
+    locale: "en-GB", // Use UK locale for "postcode" instead of "zip code"
+    appearance,
   }
 
   if (!stripeKey) {

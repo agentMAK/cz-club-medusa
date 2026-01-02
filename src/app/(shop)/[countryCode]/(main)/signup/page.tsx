@@ -1,5 +1,4 @@
 "use client"
-import { Metadata } from "next"
 import { Bebas_Neue } from "next/font/google"
 import { useState, FormEvent } from "react"
 import { Mail } from "lucide-react"
