@@ -10,6 +10,69 @@ const regionMapCache = {
   regionMapUpdated: Date.now(),
 }
 
+// Frontend settings type and cache for Edge runtime
+type FrontendSettings = {
+  waitlist_enabled: boolean
+  passcode: string | null
+}
+
+const settingsCache: {
+  data: FrontendSettings | null
+  timestamp: number
+} = {
+  data: null,
+  timestamp: 0,
+}
+
+const SETTINGS_CACHE_TTL = 60 * 1000 // 60 seconds
+
+/**
+ * Fetches frontend settings from Medusa Store API (Edge-compatible)
+ */
+async function getFrontendSettings(): Promise<FrontendSettings> {
+  const now = Date.now()
+
+  // Return cached if still valid
+  if (settingsCache.data && now - settingsCache.timestamp < SETTINGS_CACHE_TTL) {
+    return settingsCache.data
+  }
+
+  const defaultSettings: FrontendSettings = {
+    waitlist_enabled: false,
+    passcode: null,
+  }
+
+  if (!BACKEND_URL) {
+    return defaultSettings
+  }
+
+  try {
+    const response = await fetch(`${BACKEND_URL}/store/frontend-settings`, {
+      method: "GET",
+      headers: {
+        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
+      },
+      next: { revalidate: 60 },
+    })
+
+    if (!response.ok) {
+      console.error(`Frontend settings fetch failed: ${response.status}`)
+      return settingsCache.data ?? defaultSettings
+    }
+
+    const data = await response.json()
+    const settings = data.settings ?? defaultSettings
+
+    settingsCache.data = settings
+    settingsCache.timestamp = now
+
+    return settings
+  } catch (error) {
+    console.error("Failed to fetch frontend settings in middleware:", error)
+    return settingsCache.data ?? defaultSettings
+  }
+}
+
 async function getRegionMap(cacheId: string) {
   const { regionMap, regionMapUpdated } = regionMapCache
 
@@ -120,24 +183,27 @@ export async function middleware(request: NextRequest) {
   // Extract path parts
   const pathParts = pathname.split("/").filter(Boolean)
   const countryCodeFromUrl = pathParts[0]
-  const pathWithoutCountry = pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
-  
+  const pathWithoutCountry =
+    pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
+
   // Identify page types
-  const isRootPage = pathParts.length === 1  // just /{countryCode}
+  const isRootPage = pathParts.length === 1 // just /{countryCode}
   const isWaitlistPage = pathWithoutCountry === "/waitlist"
-  
+
   // Check if this is a protected route (store or products only - NOT root page)
   // Root page is where passcode entry happens, so it should always be accessible
-  const isProtectedRoute = 
-    pathWithoutCountry === "/store" || 
+  const isProtectedRoute =
+    pathWithoutCountry === "/store" ||
     pathWithoutCountry.startsWith("/products")
 
-  // Get environment variables (ENABLE_WAITLIST defaults to false if not defined)
-  const ENABLE_WAITLIST = process.env.NEXT_PUBLIC_ENABLE_WAITLIST === "true"
-  const SITE_ACCESS_CODE = process.env.SITE_ACCESS_CODE
-  
+  // Fetch settings from Medusa (source of truth)
+  const settings = await getFrontendSettings()
+  const ENABLE_WAITLIST = settings.waitlist_enabled
+  const SITE_ACCESS_CODE = settings.passcode
+
   // Get verification status
-  const passcodeVerified = request.cookies.get("_site_access_verified")?.value === "true"
+  const passcodeVerified =
+    request.cookies.get("_site_access_verified")?.value === "true"
   const authToken = request.cookies.get("_medusa_jwt")
   const isVerified = passcodeVerified || !!authToken
 
@@ -148,18 +214,27 @@ export async function middleware(request: NextRequest) {
       return NextResponse.next()
     }
     // If waitlist is NOT enabled, redirect to root
-    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}`, request.url), 307)
+    return NextResponse.redirect(
+      new URL(`/${countryCodeFromUrl}`, request.url),
+      307
+    )
   }
 
   // PRIORITY 1: Waitlist protection for root + store + products
   if (ENABLE_WAITLIST && (isRootPage || isProtectedRoute)) {
-    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}/waitlist`, request.url), 307)
+    return NextResponse.redirect(
+      new URL(`/${countryCodeFromUrl}/waitlist`, request.url),
+      307
+    )
   }
 
   // PRIORITY 2: Passcode protection (only store & products - passcode entry happens on root page)
   if (SITE_ACCESS_CODE && isProtectedRoute && !isVerified) {
     // Redirect back to root page where user can enter passcode
-    return NextResponse.redirect(new URL(`/${countryCodeFromUrl}`, request.url), 307)
+    return NextResponse.redirect(
+      new URL(`/${countryCodeFromUrl}`, request.url),
+      307
+    )
   }
 
   let redirectUrl = request.nextUrl.href

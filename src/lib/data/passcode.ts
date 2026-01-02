@@ -1,13 +1,17 @@
 "use server"
 
 import { cookies } from "next/headers"
+import { getFrontendSettings } from "./frontend-settings"
 
 /**
- * Verifies the submitted passcode against the environment variable
+ * Verifies the submitted passcode against Medusa settings
  * and sets a verification cookie if correct
  */
-export async function verifyPasscode(submittedPasscode: string): Promise<{ success: boolean }> {
-  const correctPasscode = process.env.SITE_ACCESS_CODE
+export async function verifyPasscode(
+  submittedPasscode: string
+): Promise<{ success: boolean }> {
+  const settings = await getFrontendSettings()
+  const correctPasscode = settings.passcode
 
   // If no passcode is configured, allow access
   if (!correctPasscode) {
@@ -36,7 +40,8 @@ export async function verifyPasscode(submittedPasscode: string): Promise<{ succe
  * Checks if the user has verified their passcode
  */
 export async function isPasscodeVerified(): Promise<boolean> {
-  const correctPasscode = process.env.SITE_ACCESS_CODE
+  const settings = await getFrontendSettings()
+  const correctPasscode = settings.passcode
 
   // If no passcode is configured, allow access
   if (!correctPasscode) {
@@ -53,6 +58,6 @@ export async function isPasscodeVerified(): Promise<boolean> {
  * Checks if a passcode is required to access the store
  */
 export async function isPasscodeRequired(): Promise<boolean> {
-  return !!process.env.SITE_ACCESS_CODE
+  const settings = await getFrontendSettings()
+  return !!settings.passcode
 }
-
