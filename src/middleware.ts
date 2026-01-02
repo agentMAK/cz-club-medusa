@@ -52,7 +52,7 @@ async function getFrontendSettings(): Promise<FrontendSettings> {
       headers: {
         "x-publishable-api-key": PUBLISHABLE_API_KEY!,
       },
-      next: { revalidate: 60 },
+      cache: "no-store",
     })
 
     if (!response.ok) {
@@ -61,7 +61,7 @@ async function getFrontendSettings(): Promise<FrontendSettings> {
     }
 
     const data = await response.json()
-    const settings = data.settings ?? defaultSettings
+    const settings = data ?? defaultSettings
 
     settingsCache.data = settings
     settingsCache.timestamp = now

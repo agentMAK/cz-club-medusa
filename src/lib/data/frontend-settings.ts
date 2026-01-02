@@ -30,7 +30,7 @@ export async function getFrontendSettings(): Promise<FrontendSettings> {
       }
     )
 
-    return response.settings ?? DEFAULT_SETTINGS
+    return response ?? DEFAULT_SETTINGS
   } catch (error) {
     console.error("Failed to fetch frontend settings from Medusa:", error)
     // Return defaults if API fails (e.g., module not yet deployed)
