@@ -10,9 +10,9 @@ const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 const SideMenuItems = {
   Home: "/",
-  Store: "/store",
-  Account: "/account",
-  Cart: "/cart",
+  Shop: "/store",
+  Events: "/events",
+  Contact: "/contact",
 }
 
 const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {

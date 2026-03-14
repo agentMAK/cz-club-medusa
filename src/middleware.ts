@@ -95,7 +95,6 @@ async function getRegionMap(cacheId: string) {
         revalidate: 3600,
         tags: [`regions-${cacheId}`],
       },
-      cache: "no-store",
     }).then(async (response) => {
       const json = await response.json()
 

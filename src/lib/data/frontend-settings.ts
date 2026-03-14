@@ -15,7 +15,7 @@ const DEFAULT_SETTINGS: FrontendSettings = {
 
 /**
  * Fetches frontend settings from Medusa Store API
- * Uses ISR caching (revalidates every 60 seconds)
+ * Uses no-store to always read latest backend passcode/waitlist settings
  */
 export async function getFrontendSettings(): Promise<FrontendSettings> {
   try {
@@ -23,10 +23,7 @@ export async function getFrontendSettings(): Promise<FrontendSettings> {
       `/store/frontend-settings`,
       {
         method: "GET",
-        next: {
-          revalidate: 60, // ISR: revalidate every 60 seconds
-          tags: ["frontend-settings"],
-        },
+        cache: "no-store",
       }
     )
 

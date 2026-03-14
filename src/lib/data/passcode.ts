@@ -61,3 +61,29 @@ export async function isPasscodeRequired(): Promise<boolean> {
   const settings = await getFrontendSettings()
   return !!settings.passcode
 }
+
+/**
+ * Returns passcode gate status with a single settings fetch.
+ */
+export async function getPasscodeGateStatus(): Promise<{
+  required: boolean
+  verified: boolean
+}> {
+  const settings = await getFrontendSettings()
+  const required = !!settings.passcode
+
+  if (!required) {
+    return {
+      required: false,
+      verified: true,
+    }
+  }
+
+  const cookieStore = await cookies()
+  const verificationCookie = cookieStore.get("_site_access_verified")
+
+  return {
+    required: true,
+    verified: verificationCookie?.value === "true",
+  }
+}

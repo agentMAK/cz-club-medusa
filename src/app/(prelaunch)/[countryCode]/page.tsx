@@ -4,8 +4,8 @@ import Image from "next/image"
 import Link from "next/link"
 import { Bebas_Neue } from "next/font/google"
 import { FaInstagram, FaTiktok } from "react-icons/fa"
-import { useState, FormEvent } from "react"
-import { verifyPasscode, isPasscodeRequired, isPasscodeVerified } from "@lib/data/passcode"
+import { useState, FormEvent, useEffect } from "react"
+import { getPasscodeGateStatus, verifyPasscode } from "@lib/data/passcode"
 import { useParams, useRouter } from "next/navigation"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
@@ -20,27 +20,53 @@ export default function LandingPage() {
   const [error, setError] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [isCheckingAccess, setIsCheckingAccess] = useState(false)
+  const [gateStatus, setGateStatus] = useState<{
+    required: boolean
+    verified: boolean
+  } | null>(null)
+
+  useEffect(() => {
+    let isActive = true
+
+    getPasscodeGateStatus()
+      .then((status) => {
+        if (isActive) {
+          setGateStatus(status)
+        }
+      })
+      .catch(() => {
+        // If prefetch fails, click handler falls back to direct navigation.
+      })
+
+    return () => {
+      isActive = false
+    }
+  }, [])
 
   const handleEnterClick = async () => {
-    setIsCheckingAccess(true)
-    try {
-      const required = await isPasscodeRequired()
-      if (required) {
-        // Check if already verified
-        const verified = await isPasscodeVerified()
-        if (verified) {
-          // Already verified, go directly to store
-          router.push(`/${countryCode}/store`)
-        } else {
-          // Not verified, show passcode input
-          setShowPasscode(true)
-        }
-      } else {
-        // No passcode required, go directly to store
-        router.push(`/${countryCode}/store`)
+    const resolveStatus = async () => {
+      if (gateStatus) {
+        return gateStatus
       }
+
+      const status = await getPasscodeGateStatus()
+      setGateStatus(status)
+      return status
+    }
+
+    setIsCheckingAccess(true)
+
+    try {
+      const status = await resolveStatus()
+
+      if (status.required && !status.verified) {
+        setShowPasscode(true)
+        return
+      }
+
+      router.push(`/${countryCode}/store`)
     } catch (err) {
-      // If check fails, try going to store (middleware will handle protection)
+      // If checks fail, let middleware enforce access on /store.
       router.push(`/${countryCode}/store`)
     } finally {
       setIsCheckingAccess(false)
