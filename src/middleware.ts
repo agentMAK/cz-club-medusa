@@ -196,10 +196,10 @@ export async function middleware(request: NextRequest) {
     pathWithoutCountry === "/store" ||
     pathWithoutCountry.startsWith("/products")
 
-  // PREVIEW=false explicitly disables waitlist/passcode gates.
-  // If PREVIEW is undefined or true, keep existing backend-driven behavior.
+  // PREVIEW=true explicitly disables waitlist/passcode gates.
+  // If PREVIEW is undefined or false, keep existing backend-driven behavior.
   const previewFlag = process.env.PREVIEW?.trim().toLowerCase()
-  const disableGates = previewFlag === "false"
+  const disableGates = previewFlag === "true"
 
   // Fetch settings from Medusa (source of truth) unless gates are disabled.
   const settings = disableGates
