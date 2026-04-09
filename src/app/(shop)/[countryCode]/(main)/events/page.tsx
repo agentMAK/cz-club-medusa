@@ -1,7 +1,7 @@
 import { Metadata } from "next"
 import { Bebas_Neue, Inter } from "next/font/google"
-import EmailSignup from "@modules/events/components/email-signup"
-import MasonryLayout from "@modules/events/components/masonry-layout"
+import EventsMailingCta from "@modules/events/components/events-mailing-cta"
+import WorkWithUs from "@modules/events/components/work-with-us"
 
 export const metadata: Metadata = {
   title: "Events | CZ CLUB",
@@ -11,14 +11,33 @@ export const metadata: Metadata = {
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 const inter = Inter({
   subsets: ["latin"],
-  weight: ["300", "400"],
+  weight: ["300", "400", "600"],
   display: "swap",
 })
 
-export default function EventsPage() {
+export default async function EventsPage(props: {
+  params: Promise<{ countryCode: string }>
+}) {
+  const { countryCode } = await props.params
+
   return (
-    <main className="min-h-screen bg-white">
-      <div className="w-full bg-white py-12 px-6">
+    <main className="relative min-h-screen bg-white">
+      <div
+        className="pointer-events-none fixed inset-0 z-0 h-[100dvh] w-full bg-black"
+        aria-hidden
+      >
+        <video
+          className="h-full w-full object-cover"
+          src="/videos/events-hero.mov"
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+        />
+      </div>
+      <div className="relative z-10 min-h-[100dvh] w-full" aria-hidden />
+      <div className="relative z-10 w-full bg-white py-12 px-6">
         <div className="max-w-7xl mx-auto">
           <h1
             className={`${bebas.className} text-5xl md:text-6xl text-black mb-8 text-center tracking-wide`}
@@ -35,8 +54,6 @@ export default function EventsPage() {
               to stay in their lane.
             </p>
 
-            <p>We create these events to flip that narrative.</p>
-
             <p>
               Our slogan, &quot;All About the Dos and Doers,&quot; is more than
               a tagline — it&apos;s the reason these shows exist. We gather
@@ -46,32 +63,19 @@ export default function EventsPage() {
               power.
             </p>
 
-            <p>
-              These shows aren&apos;t just to shine a light on our own brand —
-              they&apos;re built to bring visibility to others pushing in the
-              same direction.
-            </p>
-
-            <p>
+            <p className="font-semibold">
               We curate a community of rising designers, artists, and builders
               who deserve a space where their work is felt, respected, and
               remembered.
             </p>
 
-            <p>Underground isn&apos;t a style — it&apos;s a statement.</p>
-
-            <p>
-              It&apos;s where real culture grows before it hits the surface.
-            </p>
-
-            <p className="font-medium">
-              Our mission is to give the underdogs a stage big enough for their
-              voice, their vision, and their future.
-            </p>
+            <div className="pt-6">
+              <EventsMailingCta countryCode={countryCode} />
+            </div>
           </div>
         </div>
       </div>
-      <MasonryLayout />
+      <WorkWithUs />
     </main>
   )
 }

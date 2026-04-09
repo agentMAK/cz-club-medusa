@@ -120,22 +120,16 @@ export default function LandingPage() {
               {isCheckingAccess ? "..." : "ENTER"}
             </button>
             <Link
-              href={`/${countryCode}/signup`}
-              className="text-xl hover:text-gray-500 transition-colors"
-            >
-              SIGN UP
-            </Link>
-            <Link
               href={`/${countryCode}/events`}
               className="text-xl hover:text-gray-500 transition-colors"
             >
               EVENTS
             </Link>
             <Link
-              href={`/${countryCode}/contact`}
+              href={`/${countryCode}/signup`}
               className="text-xl hover:text-gray-500 transition-colors"
             >
-              CONTACT
+              SIGN UP
             </Link>
           </div>
         ) : (

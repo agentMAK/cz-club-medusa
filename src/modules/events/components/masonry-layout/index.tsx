@@ -5,7 +5,7 @@ import { eventImages } from "../../lib/event-images"
 
 const MasonryLayout = () => {
   return (
-    <div className="w-full px-6 py-12">
+    <div className="relative z-10 w-full bg-white px-6 py-12">
       <div className="max-w-7xl mx-auto">
         <div className="columns-1 md:columns-3 gap-4 md:gap-6">
           {eventImages.map((image, index) => (

@@ -3,6 +3,8 @@
 import { Bebas_Neue } from "next/font/google"
 import { useState, FormEvent } from "react"
 
+import { subscribeToNewsletter } from "@lib/mailchimp-subscribe-jsonp"
+
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 const EmailSignup = () => {
@@ -13,69 +15,20 @@ const EmailSignup = () => {
     text: string
   } | null>(null)
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     setIsSubmitting(true)
     setMessage(null)
 
-    const script = document.createElement("script")
-    const callbackName = `mailchimpCallback${Date.now()}`
+    const { ok, message: text } = await subscribeToNewsletter(email)
 
-    // Create global callback function
-    ;(window as any)[callbackName] = (data: any) => {
-      if (data.result === "success") {
-        setMessage({
-          type: "success",
-          text: data.msg || "Thank you! You've been added to our mailing list.",
-        })
-        setEmail("")
-      } else {
-        if (data.msg?.includes("already subscribed")) {
-          setMessage({
-            type: "error",
-            text: "This email is already subscribed.",
-          })
-        } else {
-          setMessage({
-            type: "error",
-            text: data.msg || "Something went wrong. Please try again.",
-          })
-        }
-      }
-
-      setIsSubmitting(false)
-
-      // Cleanup
-      delete (window as any)[callbackName]
-      document.head.removeChild(script)
+    if (ok) {
+      setMessage({ type: "success", text })
+      setEmail("")
+    } else {
+      setMessage({ type: "error", text })
     }
-
-    // Build JSONP URL
-    const params = new URLSearchParams({
-      u: "ef63203cb7a256dc5cf907dc4",
-      id: "76a1060c0b",
-      f_id: "00cadbe3f0",
-      EMAIL: email,
-      c: callbackName,
-    })
-
-    script.src = `https://theczclub.us2.list-manage.com/subscribe/post-json?${params.toString()}`
-    document.head.appendChild(script)
-
-    // Fallback timeout
-    setTimeout(() => {
-      if ((window as any)[callbackName]) {
-        setMessage({
-          type: "error",
-          text: "No response. The form might have submitted successfully - please check your email.",
-        })
-        setIsSubmitting(false)
-        delete (window as any)[callbackName]
-        if (script.parentNode) {
-          document.head.removeChild(script)
-        }
-      }
-    }, 5000)
+    setIsSubmitting(false)
   }
 
   return (
@@ -108,7 +61,7 @@ const EmailSignup = () => {
               disabled={isSubmitting}
               className={`${bebas.className} w-full sm:w-auto px-6 py-3 rounded-md bg-black text-white hover:bg-gray-800 transition-colors disabled:opacity-50 tracking-wide text-lg`}
             >
-              {isSubmitting ? "..." : "SUBCRIBE"}
+              {isSubmitting ? "..." : "SUBSCRIBE"}
             </button>
           </form>
         )}
@@ -122,4 +75,3 @@ const EmailSignup = () => {
 }
 
 export default EmailSignup
-

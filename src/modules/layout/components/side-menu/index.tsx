@@ -15,7 +15,13 @@ const SideMenuItems = {
   Contact: "/contact",
 }
 
-const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
+const SideMenu = ({
+  regions,
+  lightNav,
+}: {
+  regions: HttpTypes.StoreRegion[] | null
+  lightNav?: boolean
+}) => {
   const [isOpen, setIsOpen] = useState(false)
 
   const openMenu = () => setIsOpen(true)
@@ -28,7 +34,11 @@ const SideMenu = ({ regions }: { regions: HttpTypes.StoreRegion[] | null }) => {
         <button
           data-testid="nav-menu-button"
           onClick={openMenu}
-          className={`relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none text-black hover:text-gray-600 text-base ${bebas.className}`}
+          className={`relative h-full flex items-center transition-all ease-out duration-200 focus:outline-none text-base ${bebas.className} ${
+            lightNav
+              ? "text-white hover:text-white/80"
+              : "text-black hover:text-gray-600"
+          }`}
         >
           Menu
         </button>

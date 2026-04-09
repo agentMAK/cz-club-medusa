@@ -13,6 +13,7 @@ import DeleteButton from "@modules/common/components/delete-button"
 import LineItemOptions from "@modules/common/components/line-item-options"
 import LineItemPrice from "@modules/common/components/line-item-price"
 import LocalizedClientLink from "@modules/common/components/localized-client-link"
+import { useEventsNavOverlay } from "@modules/layout/components/events-nav-overlay-context"
 import Thumbnail from "@modules/products/components/thumbnail"
 import { usePathname } from "next/navigation"
 import { Fragment, useEffect, useRef, useState } from "react"
@@ -67,6 +68,7 @@ const CartDropdown = ({
   }, [activeTimer])
 
   const pathname = usePathname()
+  const eventsVideoOverlay = useEventsNavOverlay()
 
   // open cart dropdown when modifying the cart items, but only if we're not on the cart page
   useEffect(() => {
@@ -85,7 +87,11 @@ const CartDropdown = ({
       <Popover className="relative h-full">
         <PopoverButton className="h-full">
           <LocalizedClientLink
-            className={`text-black hover:text-gray-600 text-base ${bebas.className}`}
+            className={`text-base ${bebas.className} ${
+              eventsVideoOverlay
+                ? "text-white hover:text-white/80"
+                : "text-black hover:text-gray-600"
+            }`}
             href="/cart"
             data-testid="nav-cart-link"
           >{`Cart (${totalItems})`}</LocalizedClientLink>
