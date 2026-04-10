@@ -4,7 +4,7 @@ import { cookies } from "next/headers"
 import { getFrontendSettings } from "./frontend-settings"
 
 /**
- * Verifies the submitted passcode against Medusa settings
+ * Verifies the submitted passcode against `SITE_ACCESS_PASSCODE`
  * and sets a verification cookie if correct
  */
 export async function verifyPasscode(

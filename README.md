@@ -76,6 +76,14 @@ cd cz-club-medusa/
 mv .env.template .env.local
 ```
 
+Optional storefront gates (set in `.env.local` and in Vercel project settings; redeploy after changing):
+
+| Variable | Description |
+| -------- | ----------- |
+| `WAITLIST_ENABLED` | Set to `true` to send users to the waitlist flow. |
+| `SITE_ACCESS_PASSCODE` | Optional site passcode for protected routes. Do not use a `NEXT_PUBLIC_` prefix. |
+| `PREVIEW` | Set to `true` to disable waitlist and passcode gates (e.g. previews). |
+
 ### Install dependencies
 
 Use Yarn to install all dependencies.

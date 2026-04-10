@@ -1,4 +1,5 @@
 import { HttpTypes } from "@medusajs/types"
+import { getFrontendSettingsFromEnv } from "@lib/frontend-gates-env"
 import { NextRequest, NextResponse } from "next/server"
 
 const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
@@ -8,69 +9,6 @@ const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
   regionMapUpdated: Date.now(),
-}
-
-// Frontend settings type and cache for Edge runtime
-type FrontendSettings = {
-  waitlist_enabled: boolean
-  passcode: string | null
-}
-
-const settingsCache: {
-  data: FrontendSettings | null
-  timestamp: number
-} = {
-  data: null,
-  timestamp: 0,
-}
-
-const SETTINGS_CACHE_TTL = 60 * 1000 // 60 seconds
-
-/**
- * Fetches frontend settings from Medusa Store API (Edge-compatible)
- */
-async function getFrontendSettings(): Promise<FrontendSettings> {
-  const now = Date.now()
-
-  // Return cached if still valid
-  if (settingsCache.data && now - settingsCache.timestamp < SETTINGS_CACHE_TTL) {
-    return settingsCache.data
-  }
-
-  const defaultSettings: FrontendSettings = {
-    waitlist_enabled: false,
-    passcode: null,
-  }
-
-  if (!BACKEND_URL) {
-    return defaultSettings
-  }
-
-  try {
-    const response = await fetch(`${BACKEND_URL}/store/frontend-settings`, {
-      method: "GET",
-      headers: {
-        "x-publishable-api-key": PUBLISHABLE_API_KEY!,
-      },
-      cache: "no-store",
-    })
-
-    if (!response.ok) {
-      console.error(`Frontend settings fetch failed: ${response.status}`)
-      return settingsCache.data ?? defaultSettings
-    }
-
-    const data = await response.json()
-    const settings = data ?? defaultSettings
-
-    settingsCache.data = settings
-    settingsCache.timestamp = now
-
-    return settings
-  } catch (error) {
-    console.error("Failed to fetch frontend settings in middleware:", error)
-    return settingsCache.data ?? defaultSettings
-  }
 }
 
 async function getRegionMap(cacheId: string) {
@@ -196,14 +134,13 @@ export async function middleware(request: NextRequest) {
     pathWithoutCountry.startsWith("/products")
 
   // PREVIEW=true explicitly disables waitlist/passcode gates.
-  // If PREVIEW is undefined or false, keep existing backend-driven behavior.
+  // If PREVIEW is undefined or false, use WAITLIST_ENABLED and SITE_ACCESS_PASSCODE.
   const previewFlag = process.env.PREVIEW?.trim().toLowerCase()
   const disableGates = previewFlag === "true"
 
-  // Fetch settings from Medusa (source of truth) unless gates are disabled.
   const settings = disableGates
     ? { waitlist_enabled: false, passcode: null }
-    : await getFrontendSettings()
+    : getFrontendSettingsFromEnv()
   const ENABLE_WAITLIST = settings.waitlist_enabled
   const SITE_ACCESS_CODE = settings.passcode
 
