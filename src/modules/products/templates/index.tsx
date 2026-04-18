@@ -47,7 +47,7 @@ const ProductTemplate: React.FC<ProductTemplateProps> = ({
           >
             <ProductActionsWrapper id={product.id} region={region} />
           </Suspense>
-          <DeliveryInfo />
+          <DeliveryInfo product={product} />
         </div>
       </div>
       <div

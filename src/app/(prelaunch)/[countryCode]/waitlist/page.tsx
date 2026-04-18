@@ -17,16 +17,8 @@ export default function WaitlistPage() {
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault() // Prevent default form submission
-    console.log("Submitting email:", email)
     setIsSubmitting(true)
     setMessage(null)
-
-    // Log form data for debugging
-    const formData = new FormData(e.currentTarget)
-    console.log("Form data being sent:")
-    formData.forEach((value, key) => {
-      console.log(`${key}: ${value}`)
-    })
 
     // Also try JSONP approach for better error handling
     const script = document.createElement("script")
@@ -34,8 +26,6 @@ export default function WaitlistPage() {
 
     // Create global callback function
     ;(window as any)[callbackName] = (data: any) => {
-      console.log("Mailchimp response:", data)
-
       if (data.result === "success") {
         setMessage({
           type: "success",
@@ -77,14 +67,12 @@ export default function WaitlistPage() {
     })
 
     script.src = `https://theczclub.us2.list-manage.com/subscribe/post-json?${params.toString()}`
-    console.log("JSONP URL:", script.src)
 
     document.head.appendChild(script)
 
     // Fallback timeout in case JSONP doesn't respond
     setTimeout(() => {
       if ((window as any)[callbackName]) {
-        console.log("JSONP timeout - no response from Mailchimp")
         setMessage({
           type: "error",
           text: "No response from Mailchimp. The form might have submitted successfully - please check your email.",

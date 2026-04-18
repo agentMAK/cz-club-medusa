@@ -11,7 +11,7 @@ import { useParams } from "next/navigation"
 import { useEffect, useMemo, useRef, useState } from "react"
 import ProductPrice from "../product-price"
 import MobileActions from "./mobile-actions"
-import { Clock, Check } from "lucide-react"
+import { Clock, Check, XCircle } from "lucide-react"
 
 type ProductActionsProps = {
   product: HttpTypes.StoreProduct
@@ -209,6 +209,16 @@ export default function ProductActions({
           <div className="flex items-center gap-2 text-green-700">
             <Check className="w-4 h-4" />
             <span className="text-sm font-medium">In stock</span>
+          </div>
+        )}
+
+        {selectedVariant && !inStock && (
+          <div
+            className="flex items-center gap-2 text-red-700"
+            data-testid="product-out-of-stock"
+          >
+            <XCircle className="w-4 h-4" />
+            <span className="text-sm font-medium">Out of Stock</span>
           </div>
         )}
 
