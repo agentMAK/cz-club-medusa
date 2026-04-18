@@ -92,10 +92,10 @@ export default function ShippingPage() {
             <p>
               If you have any concerns about your order, please contact us at{" "}
               <a 
-                href="mailto:team.theczclub@gmail.com"
+                href="mailto:Team@theczclub.com"
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                team.theczclub@gmail.com
+                Team@theczclub.com
               </a>
             </p>
           </div>
@@ -114,10 +114,10 @@ export default function ShippingPage() {
             <p>
               Contact us at{" "}
               <a 
-                href="mailto:team.theczclub@gmail.com"
+                href="mailto:Team@theczclub.com"
                 className="text-blue-600 hover:text-blue-800 font-medium"
               >
-                team.theczclub@gmail.com
+                Team@theczclub.com
               </a>
               {" "}with your order number and reason for return.
             </p>

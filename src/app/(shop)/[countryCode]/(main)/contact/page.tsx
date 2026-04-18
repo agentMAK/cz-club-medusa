@@ -33,10 +33,10 @@ export default function ContactPage() {
                 For order inquiries, product questions, or general assistance
               </p>
               <a 
-                href="mailto:team.theczclub@gmail.com"
+                href="mailto:Team@theczclub.com"
                 className="text-lg text-blue-600 hover:text-blue-800 transition-colors font-medium"
               >
-                team.theczclub@gmail.com
+                Team@theczclub.com
               </a>
             </div>
 

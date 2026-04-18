@@ -7,7 +7,7 @@ const inter = Inter({
   display: "swap",
 })
 
-const COLLAB_EMAIL = "team.theczclub@gmail.com"
+const COLLAB_EMAIL = "team@theczclub.com"
 const mailtoHref = `mailto:${COLLAB_EMAIL}?subject=${encodeURIComponent(
   "Work with us — collaboration"
 )}`

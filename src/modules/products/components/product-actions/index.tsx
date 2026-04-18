@@ -28,6 +28,24 @@ const optionsAsKeymap = (
   }, {})
 }
 
+const variantIsPurchasable = (
+  variant: HttpTypes.StoreProductVariant | undefined
+): boolean => {
+  if (!variant) {
+    return false
+  }
+  if (!variant.manage_inventory) {
+    return true
+  }
+  if (variant.allow_backorder) {
+    return true
+  }
+  if (variant.manage_inventory && (variant.inventory_quantity || 0) > 0) {
+    return true
+  }
+  return false
+}
+
 export default function ProductActions({
   product,
   disabled,
@@ -37,42 +55,48 @@ export default function ProductActions({
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
   const countryCode = useParams().countryCode as string
 
-  // If there is only 1 variant, preselect the options
-  // Otherwise, default to "M" if available
+  // If there is only 1 variant, preselect the options.
+  // Otherwise default to a purchasable variant when possible (prefer M among purchasable).
   useEffect(() => {
     if (product.variants?.length === 1) {
       const variantOptions = optionsAsKeymap(product.variants[0].options)
       setOptions(variantOptions ?? {})
     } else if (product.variants && product.variants.length > 1) {
-      // Default to "M" if available
+      const variants = product.variants
       setOptions((currentOptions) => {
-        // Don't override if user has already made selections
-        const hasAnySelection = Object.values(currentOptions).some(v => v !== undefined)
+        const hasAnySelection = Object.values(currentOptions).some(
+          (v) => v !== undefined
+        )
         if (hasAnySelection) {
           return currentOptions
         }
-        
+
         if (!product.options) {
           return currentOptions
         }
-        
-        // Find a variant that has "M" for any option
-        const variantWithM = product.variants?.find((v) => {
-          return v.options?.some((opt) => opt.value === "M")
-        })
-        
-        if (variantWithM) {
-          const variantOptions = optionsAsKeymap(variantWithM.options)
-          // Only use this if it includes "M"
-          if (variantOptions) {
-            const hasM = Object.values(variantOptions).some(v => v === "M")
-            if (hasM) {
-              return variantOptions
-            }
-          }
+
+        const purchasableWithM = variants.find(
+          (v) =>
+            variantIsPurchasable(v) &&
+            !!v.options?.some((opt) => opt.value === "M")
+        )
+        const anyPurchasable = variants.find((v) => variantIsPurchasable(v))
+        const variantWithM = variants.find((v) =>
+          v.options?.some((opt) => opt.value === "M")
+        )
+
+        const chosen =
+          purchasableWithM ??
+          anyPurchasable ??
+          variantWithM ??
+          variants[0]
+
+        const variantOptions = optionsAsKeymap(chosen.options)
+        if (!variantOptions) {
+          return currentOptions
         }
-        
-        return currentOptions
+
+        return variantOptions
       })
     }
   }, [product.variants, product.options])
@@ -106,29 +130,10 @@ export default function ProductActions({
     })
   }, [product.variants, options])
 
-  // check if the selected variant is in stock
-  const inStock = useMemo(() => {
-    // If we don't manage inventory, we can always add to cart
-    if (selectedVariant && !selectedVariant.manage_inventory) {
-      return true
-    }
-
-    // If we allow back orders on the variant, we can add to cart
-    if (selectedVariant?.allow_backorder) {
-      return true
-    }
-
-    // If there is inventory available, we can add to cart
-    if (
-      selectedVariant?.manage_inventory &&
-      (selectedVariant?.inventory_quantity || 0) > 0
-    ) {
-      return true
-    }
-
-    // Otherwise, we can't add to cart
-    return false
-  }, [selectedVariant])
+  const inStock = useMemo(
+    () => variantIsPurchasable(selectedVariant),
+    [selectedVariant]
+  )
 
 // check if the selected variant is a preorder
   const isPreorder = useMemo((): boolean => {
