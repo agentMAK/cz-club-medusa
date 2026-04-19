@@ -59,9 +59,8 @@ const StripePaymentButton = ({
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        // Don't show error for Next.js redirects
         if (err?.digest?.startsWith("NEXT_REDIRECT")) {
-          throw err // Re-throw so redirect still works
+          throw err
         }
         setErrorMessage(err.message)
       })
@@ -72,6 +71,11 @@ const StripePaymentButton = ({
 
   const stripe = useStripe()
   const elements = useElements()
+  const card = elements?.getElement("card")
+
+  const session = cart.payment_collection?.payment_sessions?.find(
+    (s) => s.status === "pending"
+  )
 
   const disabled = !stripe || !elements
 
@@ -79,17 +83,16 @@ const StripePaymentButton = ({
     setSubmitting(true)
     setErrorMessage(null)
 
-    if (!stripe || !elements || !cart) {
+    if (!stripe || !elements || !card || !cart || !session?.data?.client_secret) {
       setSubmitting(false)
       return
     }
 
-    // Use confirmPayment for PaymentElement (supports Apple Pay, Google Pay, cards, etc.)
-    const { error, paymentIntent } = await stripe.confirmPayment({
-      elements,
-      confirmParams: {
-        return_url: `${window.location.origin}/${cart.region?.countries?.[0]?.iso_2 || "gb"}/order/confirmed`,
-        payment_method_data: {
+    const { error, paymentIntent } = await stripe.confirmCardPayment(
+      session.data.client_secret as string,
+      {
+        payment_method: {
+          card,
           billing_details: {
             name:
               cart.billing_address?.first_name +
@@ -107,19 +110,17 @@ const StripePaymentButton = ({
             phone: cart.billing_address?.phone ?? undefined,
           },
         },
-      },
-      redirect: "if_required", // Only redirect if the payment method requires it
-    })
+      }
+    )
 
     if (error) {
       const pi = error.payment_intent
 
-      // If payment was already completed despite the error
       if (
         (pi && pi.status === "requires_capture") ||
         (pi && pi.status === "succeeded")
       ) {
-        onPaymentCompleted()
+        await onPaymentCompleted()
         return
       }
 
@@ -128,14 +129,16 @@ const StripePaymentButton = ({
       return
     }
 
-    // Payment successful
     if (
       paymentIntent &&
       (paymentIntent.status === "requires_capture" ||
         paymentIntent.status === "succeeded")
     ) {
-      onPaymentCompleted()
+      await onPaymentCompleted()
+      return
     }
+
+    setSubmitting(false)
   }
 
   return (
@@ -164,9 +167,8 @@ const ManualTestPaymentButton = ({ notReady }: { notReady: boolean }) => {
   const onPaymentCompleted = async () => {
     await placeOrder()
       .catch((err) => {
-        // Don't show error for Next.js redirects
-        if (err?.digest?.startsWith('NEXT_REDIRECT')) {
-          throw err // Re-throw so redirect still works
+        if (err?.digest?.startsWith("NEXT_REDIRECT")) {
+          throw err
         }
         setErrorMessage(err.message)
       })

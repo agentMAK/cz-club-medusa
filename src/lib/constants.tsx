@@ -11,7 +11,7 @@ export const paymentInfoMap: Record<
   { title: string; icon: React.JSX.Element }
 > = {
   pp_stripe_stripe: {
-    title: "Card, Apple Pay & Google Pay",
+    title: "Credit card",
     icon: <CreditCard />,
   },
   "pp_stripe-ideal_stripe": {

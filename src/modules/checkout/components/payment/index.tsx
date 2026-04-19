@@ -7,7 +7,7 @@ import { CheckCircleSolid, CreditCard } from "@medusajs/icons"
 import { Button, Container, Heading, Text, clx } from "@medusajs/ui"
 import ErrorMessage from "@modules/checkout/components/error-message"
 import PaymentContainer, {
-  StripePaymentContainer,
+  StripeCardContainer,
 } from "@modules/checkout/components/payment-container"
 import Divider from "@modules/common/components/divider"
 import { usePathname, useRouter, useSearchParams } from "next/navigation"
@@ -26,7 +26,8 @@ const Payment = ({
 
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
-  const [stripePaymentReady, setStripePaymentReady] = useState(false)
+  const [cardBrand, setCardBrand] = useState<string | null>(null)
+  const [cardComplete, setCardComplete] = useState(false)
   const [selectedPaymentMethod, setSelectedPaymentMethod] = useState(
     activeSession?.provider_id ?? ""
   )
@@ -74,7 +75,7 @@ const Payment = ({
   const handleSubmit = async () => {
     setIsLoading(true)
     try {
-      const shouldInputPayment =
+      const shouldInputCard =
         isStripeFunc(selectedPaymentMethod) && !activeSession
 
       const checkActiveSession =
@@ -86,7 +87,7 @@ const Payment = ({
         })
       }
 
-      if (!shouldInputPayment) {
+      if (!shouldInputCard) {
         return router.push(
           pathname + "?" + createQueryString("step", "review"),
           {
@@ -144,12 +145,13 @@ const Payment = ({
                 {availablePaymentMethods.map((paymentMethod) => (
                   <div key={paymentMethod.id}>
                     {isStripeFunc(paymentMethod.id) ? (
-                      <StripePaymentContainer
+                      <StripeCardContainer
                         paymentProviderId={paymentMethod.id}
                         selectedPaymentOptionId={selectedPaymentMethod}
                         paymentInfoMap={paymentInfoMap}
+                        setCardBrand={setCardBrand}
                         setError={setError}
-                        setPaymentReady={setStripePaymentReady}
+                        setCardComplete={setCardComplete}
                       />
                     ) : (
                       <PaymentContainer
@@ -189,13 +191,13 @@ const Payment = ({
             onClick={handleSubmit}
             isLoading={isLoading}
             disabled={
-              (isStripe && !stripePaymentReady) ||
+              (isStripe && !cardComplete) ||
               (!selectedPaymentMethod && !paidByGiftcard)
             }
             data-testid="submit-payment-button"
           >
             {!activeSession && isStripeFunc(selectedPaymentMethod)
-              ? "Enter payment details"
+              ? "Enter card details"
               : "Continue to review"}
           </Button>
         </div>
@@ -229,8 +231,8 @@ const Payment = ({
                     )}
                   </Container>
                   <Text>
-                    {isStripeFunc(selectedPaymentMethod)
-                      ? "Payment ready"
+                    {isStripeFunc(selectedPaymentMethod) && cardBrand
+                      ? cardBrand
                       : "Another step will appear"}
                   </Text>
                 </div>
