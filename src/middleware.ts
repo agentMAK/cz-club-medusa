@@ -6,6 +6,8 @@ const BACKEND_URL = process.env.MEDUSA_BACKEND_URL
 const PUBLISHABLE_API_KEY = process.env.NEXT_PUBLIC_MEDUSA_PUBLISHABLE_KEY
 const DEFAULT_REGION = process.env.NEXT_PUBLIC_DEFAULT_REGION || "us"
 
+const EVENTS_REDIRECT_URL = "https://www.theczclub.com/gb"
+
 const regionMapCache = {
   regionMap: new Map<string, HttpTypes.StoreRegion>(),
   regionMapUpdated: Date.now(),
@@ -122,6 +124,14 @@ export async function middleware(request: NextRequest) {
   const countryCodeFromUrl = pathParts[0]
   const pathWithoutCountry =
     pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
+
+  const isEventsRoute =
+    pathWithoutCountry === "/events" ||
+    pathWithoutCountry.startsWith("/events/")
+
+  if (isEventsRoute) {
+    return NextResponse.redirect(EVENTS_REDIRECT_URL, 307)
+  }
 
   // Identify page types
   const isRootPage = pathParts.length === 1 // just /{countryCode}
