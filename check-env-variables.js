@@ -15,6 +15,10 @@ const requiredEnvs = [
 ]
 
 function checkEnvVariables() {
+  if (process.env.WAITLIST_ENABLED === "true") {
+    return
+  }
+
   const missingEnvs = requiredEnvs.filter(function (env) {
     return !process.env[env.key]
   })

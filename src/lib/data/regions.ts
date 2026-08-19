@@ -16,7 +16,7 @@ export const listRegions = async () => {
       next,
     })
     .then(({ regions }) => regions)
-    .catch(medusaError)
+    .catch(() => [] as HttpTypes.StoreRegion[])
 }
 
 export const retrieveRegion = async (id: string) => {

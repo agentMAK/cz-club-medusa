@@ -117,21 +117,6 @@ export async function middleware(request: NextRequest) {
     return NextResponse.next()
   }
 
-  // Extract path parts
-  const pathParts = pathname.split("/").filter(Boolean)
-  const countryCodeFromUrl = pathParts[0]
-  const pathWithoutCountry =
-    pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
-
-  // Identify page types
-  const isWaitlistPage = pathWithoutCountry === "/waitlist"
-
-  // Check if this is a protected route (store or products only - NOT root page)
-  // Root page is where passcode entry happens, so it should always be accessible
-  const isProtectedRoute =
-    pathWithoutCountry === "/store" ||
-    pathWithoutCountry.startsWith("/products")
-
   // PREVIEW=true explicitly disables waitlist/passcode gates.
   // If PREVIEW is undefined or false, use WAITLIST_ENABLED and SITE_ACCESS_PASSCODE.
   const previewFlag = process.env.PREVIEW?.trim().toLowerCase()
@@ -141,6 +126,37 @@ export async function middleware(request: NextRequest) {
     ? { waitlist_enabled: false, passcode: null }
     : getFrontendSettingsFromEnv()
   const ENABLE_WAITLIST = settings.waitlist_enabled
+
+  // Waitlist mode: only /waitlist is reachable — no Medusa region fetch
+  if (ENABLE_WAITLIST) {
+    if (pathname === "/waitlist") {
+      return NextResponse.next()
+    }
+    return NextResponse.redirect(new URL("/waitlist", request.url), 307)
+  }
+
+  if (pathname === "/waitlist") {
+    return NextResponse.redirect(
+      new URL(`/${DEFAULT_REGION}`, request.url),
+      307
+    )
+  }
+
+  // Extract path parts
+  const pathParts = pathname.split("/").filter(Boolean)
+  const countryCodeFromUrl = pathParts[0]
+  const pathWithoutCountry =
+    pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
+
+  // Identify page types
+  const isRootPage = pathParts.length === 1 // just /{countryCode}
+
+  // Check if this is a protected route (store or products only - NOT root page)
+  // Root page is where passcode entry happens, so it should always be accessible
+  const isProtectedRoute =
+    pathWithoutCountry === "/store" ||
+    pathWithoutCountry.startsWith("/products")
+
   const SITE_ACCESS_CODE = settings.passcode
 
   // Get verification status
@@ -149,32 +165,7 @@ export async function middleware(request: NextRequest) {
   const authToken = request.cookies.get("_medusa_jwt")
   const isVerified = passcodeVerified || !!authToken
 
-  const resolveCountryFromUrl = () =>
-    countryCodeFromUrl?.length === 2
-      ? countryCodeFromUrl.toLowerCase()
-      : DEFAULT_REGION.toLowerCase()
-
-  // Waitlist gate: env + cookie only — no Medusa until access code is verified
-  if (ENABLE_WAITLIST && !passcodeVerified) {
-    if (isWaitlistPage) {
-      return NextResponse.next()
-    }
-
-    return NextResponse.redirect(
-      new URL(`/${resolveCountryFromUrl()}/waitlist`, request.url),
-      307
-    )
-  }
-
-  // Waitlist page is only valid while waitlist mode is enabled
-  if (isWaitlistPage) {
-    return NextResponse.redirect(
-      new URL(`/${resolveCountryFromUrl()}`, request.url),
-      307
-    )
-  }
-
-  // Passcode protection (only store & products - passcode entry happens on root/waitlist page)
+  // PRIORITY 2: Passcode protection (only store & products - passcode entry happens on root page)
   if (SITE_ACCESS_CODE && isProtectedRoute && !isVerified) {
     // Redirect back to root page where user can enter passcode
     return NextResponse.redirect(

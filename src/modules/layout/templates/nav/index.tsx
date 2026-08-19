@@ -11,7 +11,9 @@ import NavClient from "./nav-client"
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 export default async function Nav() {
-  const regions = await listRegions().then((regions: StoreRegion[]) => regions)
+  const regions = await listRegions()
+    .then((regions: StoreRegion[]) => regions)
+    .catch(() => [] as StoreRegion[])
 
   return (
     <NavClient regions={regions}>
