@@ -2,18 +2,49 @@
 import Image from "next/image"
 import { Bebas_Neue } from "next/font/google"
 import { useState, FormEvent } from "react"
+import { useParams } from "next/navigation"
+import { verifyPasscode } from "@lib/data/passcode"
 
 const bebas = Bebas_Neue({ subsets: ["latin"], weight: "400", display: "swap" })
 
 export default function WaitlistPage() {
+  const params = useParams()
+  const countryCode = (params?.countryCode as string) || "gb"
+
   const [showForm, setShowForm] = useState(false)
+  const [showAccessCode, setShowAccessCode] = useState(false)
   const [email, setEmail] = useState("")
+  const [passcode, setPasscode] = useState("")
   const [isSubmitting, setIsSubmitting] = useState(false)
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false)
+  const [accessCodeError, setAccessCodeError] = useState("")
   const [message, setMessage] = useState<{
     type: "success" | "error"
     text: string
   } | null>(null)
   const [debugMode, setDebugMode] = useState(false) // Toggle this to see iframe response
+
+  const handleAccessCodeSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setAccessCodeError("")
+    setIsVerifyingCode(true)
+
+    try {
+      const result = await verifyPasscode(passcode)
+
+      if (result.success) {
+        window.location.href = `/${countryCode}/store`
+      } else {
+        setAccessCodeError("Invalid access code. Please try again.")
+        setPasscode("")
+      }
+    } catch {
+      setAccessCodeError("An error occurred. Please try again.")
+      setPasscode("")
+    } finally {
+      setIsVerifyingCode(false)
+    }
+  }
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault() // Prevent default form submission
@@ -98,14 +129,62 @@ export default function WaitlistPage() {
         className={`${bebas.className} flex flex-col items-center justify-center gap-1`}
       >
         <p className="text-5xl font-bold">MEMBERS ONLY</p>
-        {!showForm ? (
-          <button
-            type="button"
-            className="px-6 py-3 rounded-md text-lg hover:text-gray-200 transition-colors"
-            onClick={() => setShowForm(true)}
+        {showAccessCode ? (
+          <form
+            onSubmit={handleAccessCodeSubmit}
+            className="flex flex-col items-center gap-4 mt-6"
           >
-            WAITLIST
-          </button>
+            <input
+              type="password"
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              placeholder="ACCESS CODE"
+              className="bg-black border border-white/30 text-white text-center px-6 py-3 text-xl focus:outline-none focus:border-white transition-colors placeholder:text-white/40"
+              autoFocus
+              disabled={isVerifyingCode}
+            />
+
+            {accessCodeError && (
+              <p className="text-sm text-red-400">{accessCodeError}</p>
+            )}
+
+            <button
+              type="submit"
+              disabled={isVerifyingCode || !passcode}
+              className="text-xl hover:text-gray-200 transition-colors disabled:text-gray-600 disabled:cursor-not-allowed"
+            >
+              {isVerifyingCode ? "VERIFYING..." : "ENTER"}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => {
+                setShowAccessCode(false)
+                setAccessCodeError("")
+                setPasscode("")
+              }}
+              className="text-sm text-white/60 hover:text-white/80 transition-colors"
+            >
+              BACK
+            </button>
+          </form>
+        ) : !showForm ? (
+          <div className="flex flex-col items-center gap-4 mt-2">
+            <button
+              type="button"
+              className="px-6 py-3 rounded-md text-lg hover:text-gray-200 transition-colors"
+              onClick={() => setShowForm(true)}
+            >
+              WAITLIST
+            </button>
+            <button
+              type="button"
+              className="text-lg hover:text-gray-200 transition-colors"
+              onClick={() => setShowAccessCode(true)}
+            >
+              ACCESS CODE
+            </button>
+          </div>
         ) : (
           <>
             {message?.type === "success" ? (

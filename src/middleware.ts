@@ -124,7 +124,6 @@ export async function middleware(request: NextRequest) {
     pathParts.length > 1 ? `/${pathParts.slice(1).join("/")}` : "/"
 
   // Identify page types
-  const isRootPage = pathParts.length === 1 // just /{countryCode}
   const isWaitlistPage = pathWithoutCountry === "/waitlist"
 
   // Check if this is a protected route (store or products only - NOT root page)
@@ -150,28 +149,32 @@ export async function middleware(request: NextRequest) {
   const authToken = request.cookies.get("_medusa_jwt")
   const isVerified = passcodeVerified || !!authToken
 
-  // Handle waitlist page access
-  if (isWaitlistPage) {
-    // Allow through if waitlist is enabled
-    if (ENABLE_WAITLIST) {
+  const resolveCountryFromUrl = () =>
+    countryCodeFromUrl?.length === 2
+      ? countryCodeFromUrl.toLowerCase()
+      : DEFAULT_REGION.toLowerCase()
+
+  // Waitlist gate: env + cookie only — no Medusa until access code is verified
+  if (ENABLE_WAITLIST && !passcodeVerified) {
+    if (isWaitlistPage) {
       return NextResponse.next()
     }
-    // If waitlist is NOT enabled, redirect to root
+
     return NextResponse.redirect(
-      new URL(`/${countryCodeFromUrl}`, request.url),
+      new URL(`/${resolveCountryFromUrl()}/waitlist`, request.url),
       307
     )
   }
 
-  // PRIORITY 1: Waitlist protection for root + store + products
-  if (ENABLE_WAITLIST && (isRootPage || isProtectedRoute)) {
+  // Waitlist page is only valid while waitlist mode is enabled
+  if (isWaitlistPage) {
     return NextResponse.redirect(
-      new URL(`/${countryCodeFromUrl}/waitlist`, request.url),
+      new URL(`/${resolveCountryFromUrl()}`, request.url),
       307
     )
   }
 
-  // PRIORITY 2: Passcode protection (only store & products - passcode entry happens on root page)
+  // Passcode protection (only store & products - passcode entry happens on root/waitlist page)
   if (SITE_ACCESS_CODE && isProtectedRoute && !isVerified) {
     // Redirect back to root page where user can enter passcode
     return NextResponse.redirect(
